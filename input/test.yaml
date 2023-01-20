@@ -1,0 +1,36 @@
+
+
+# General settings
+jobname: 'test'
+kernel: 
+     type: 'montepython' # future: cobaya
+     kernel_parameter_file: 'input/test.param' # montepython parameter file specifying the cosmological model and likelihoods etc.
+     conf_file: 'default.conf'
+     covariance_matrix: ''
+
+
+# Profile configuration
+profile:
+     dimension: '1d'
+     sampling_strategy:
+          type: 'manual' # future: automatic (or gaussian_process)
+          parameter: 'omega_b'
+          parameter_values: [0.01, 0.02, 0.03]
+          N_walkers: 5 # amount of optimizations at each point 
+
+# Optimization configuration
+optimizer: 
+     type: 'simulated_annealing'
+     N_iterations: 10
+     steps_per_iteration: 1000
+
+     temperature_schedule:
+          type: 'exponential'   # alternative: linear, etc.
+          temperature_interval: [1e-2, 1e-4]
+          stepsize_interval: [1e-0, 1e-2]
+
+# Output and analysis settings
+output:
+     confidence_interval_method: 'neyman'    # future alternative: feldman-cousins
+     plot_profile: 'yes'
+
