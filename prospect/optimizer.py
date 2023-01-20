@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from tasks import OptimizeTask, TaskStatus
 
 class BaseOptimizer(ABC):
     def __init__(self, kernel, config_optimizer):
@@ -15,9 +14,6 @@ class SimulatedAnnealing(BaseOptimizer):
         super().__init__(kernel, config_optimizer)
         # Create the kernel parameter file 
     
-    def optimize(optimize_task): 
-        optimize_task.status = TaskStatus.IN_PROGESS
+    def optimize(self): 
         # Do optimization
-
-        optimize_task.status = TaskStatus.FINISHED
-        return optimize_task
+        return 0.0

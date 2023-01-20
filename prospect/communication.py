@@ -10,9 +10,6 @@ class Scheduler:
     def __init__(self, config):
         self.config = config
         
-        if mpi_size <= 1:
-            raise Exception("PROSPECT currently only supports running with MPI and with 2 processes or more.")
-        
         samples = []
         if self.config['profile']['dimension'] == '1d':
             if self.config['profile']['sampling_strategy']['type'] == 'manual':
@@ -35,7 +32,7 @@ class Scheduler:
     def delegate(self):
         # Delegate only; do no work
         workers_working = mpi_size - 1
-        while len(self.tasks['not_started']) > 0:
+        while len(self.tasks['not_started']) + len(self.tasks['in_progress']) > 0:
             message = comm.recv(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG, status=status)
             source, tag = status.Get_source(), status.Get_tag()
             if tag == TaskTags.READY:
@@ -87,3 +84,11 @@ class Worker:
                 comm.isend(task, dest=0, tag=TaskTags.DONE)
             elif tag == TaskTags.EXIT:
                 break
+
+class Serial:
+    # Run when running PROSPECT without MPI
+    def __init__(self, config):
+        self.config = config 
+
+    def run(self):
+        pass

@@ -6,7 +6,6 @@ def enum(*sequential, **named):
     """
     enums = dict(zip(sequential, range(len(sequential))), **named)
     return type('Enum', (), enums)
-#TaskTypes = enum('OPTIMIZE', 'ACQUISITION')
 TaskStatus = enum('NOT_STARTED', 'IN_PROGESS', 'FINISHED')
 TaskTags = enum('READY', 'DONE', 'EXIT', 'START')
 
@@ -22,7 +21,6 @@ class BaseTask(ABC):
     def run():
         pass
         
-
 class OptimizeTask(BaseTask):
     def __init__(self, config, param_sample):
         super().__init__()
@@ -43,6 +41,8 @@ class OptimizeTask(BaseTask):
             self.optimizer = SimulatedAnnealing(self.kernel, self.config['optimizer'])
         else:
             raise ValueError('You have specified a non-existing optimizer type.')
+
+        # self.optimizer.optimize(STUFF, kernel)
 
         self.status = TaskStatus.FINISHED
 
