@@ -1,0 +1,3 @@
+[submodule "montepython_public"]
+	path = montepython_public
+	url = https://github.com/AarhusCosmology/montepython_public.git
