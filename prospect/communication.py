@@ -47,7 +47,7 @@ class Scheduler:
                 self.tasks['in_progress'].pop(message.id)
                 self.tasks['finished'][message.id] = message
         else:
-            # Tell everyone to stop, or queue analysis tasks
+            # Tell everyone to stop
             while workers_working > 0:
                 message = comm.recv(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG, status=status)
                 source, tag = status.Get_source(), status.Get_tag()
@@ -89,6 +89,11 @@ class Serial:
     # Run when running PROSPECT without MPI
     def __init__(self, config):
         self.config = config 
+        self.scheduler = Scheduler(config)
 
     def run(self):
-        pass
+        for idx_task in range(len(self.scheduler.tasks['not_started'])):
+            task = self.scheduler.tasks['not_started'].pop(idx_task)
+            task.run()
+            self.scheduler.tasks['finished'][task.id] = task
+
