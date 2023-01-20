@@ -34,6 +34,7 @@ class Scheduler:
     
     def delegate(self):
         # Delegate only; do no work
+        workers_working = mpi_size - 1
         while len(self.tasks['not_started']) > 0:
             message = comm.recv(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG, status=status)
             source, tag = status.Get_source(), status.Get_tag()
@@ -50,7 +51,14 @@ class Scheduler:
                 self.tasks['finished'][message.id] = message
         else:
             # Tell everyone to stop, or queue analysis tasks
-            pass
+            while workers_working > 0:
+                message = comm.recv(source=MPI.ANY_SOURCE, tag=MPI.ANY_TAG, status=status)
+                source, tag = status.Get_source(), status.Get_tag()
+                if tag == TaskTags.READY:
+                    comm.isend(None, dest=source, tag=TaskTags.EXIT)
+                    workers_working -= 1
+                else:
+                    raise Exception('Scheduler received a non-ready call when all tasks should have been finished.')
     
     def delegate_and_work(self):
         # Delegate and work simultaneously
