@@ -11,8 +11,9 @@
             "console": "integratedTerminal",
             "justMyCode": true,
 
+            "preLaunchTask": "remove_output_folder",
             "program": "${workspaceFolder}/prospect/prospect.py",
-            "args": ["-p", "input/test.yaml"]
+            "args": ["input/test.yaml"]
         }
     ]
 }

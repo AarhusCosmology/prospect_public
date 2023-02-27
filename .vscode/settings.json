@@ -1,5 +1,8 @@
 {
     "editor.fontSize": 12,
     "editor.fontFamily": "SF Mono, Menlo, Monaco, 'Courier New', monospace",
-    "workbench.colorTheme": "Default Dark+"
+    "workbench.colorTheme": "Default Dark+",
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintArgs": ["--rcfile=~/.pylintrc"]
 }

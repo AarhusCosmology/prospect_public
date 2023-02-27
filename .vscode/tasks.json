@@ -1,0 +1,10 @@
+{
+    "version": "0.2.0",
+    "tasks": [
+        {
+            "taskName": "remove_output_folder",
+            "command": "trash ${workspaceFolder}/output/test01",
+            "isShellCommand": true
+        }
+    ]
+}
