@@ -1,5 +1,4 @@
 
-
 output_dir: 'output/test01'
 overwrite_output_dir: 'yes'
 
@@ -20,8 +19,8 @@ kernel:
               [0.0, 0.8]]
 
 mcmc:
-     N_chains: 30
-     N_steps: 25000
+     N_chains: 4
+     N_steps: 1000
      algorithm: 'MetropolisHastings'
      covmat: [[0.1, 0.0], 
                [0.0, 0.1]]

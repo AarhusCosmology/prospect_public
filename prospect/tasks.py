@@ -57,17 +57,22 @@ class MCMCTask(BaseTask):
         self.mcmc = initialize_mcmc(self.config['mcmc'], self.kernel)
         self.mcmc.chain(self.config['mcmc']['N_steps'])
         self.status = TaskStatus.FINISHED
-        
+
+# from analysis import mcmc_diagnostics
 class AnalyseMCMCTask(BaseTask):
     def __init__(self, config, required_task_ids):
         super().__init__(required_task_ids)
         self.config = config
 
     def run(self):
-        # from io import write_chain
         print("ANALYSIS TASK BEING RUN")
-        print(self.required_tasks)
+        # from io import write_mcmc
+        # write_mcmc(self.required_tasks, OPTIONS)
+        # print(self.required_tasks)
         self.status = TaskStatus.FINISHED
+    
+    def write_chains(self):
+        pass 
 
 class AcquisitionTask(BaseTask):
     pass
