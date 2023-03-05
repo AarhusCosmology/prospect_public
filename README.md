@@ -24,7 +24,6 @@ To run from the command line:
 
 To run from inside a Python script:
 
-` from prospect.run import run 
-  run(input) ` 
+` from prospect.run import run; run(input) ` 
 
 where `input` is a string pointing to either the yaml input file or an output folder of a previous PROSPECT run.

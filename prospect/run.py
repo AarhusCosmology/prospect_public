@@ -9,6 +9,7 @@ def run(input: str):
     mpi_size = comm.Get_size()
 
     if mpi_rank == 0:
+        print(input, type(input))
         if os.path.isfile(input):
             config = yaml.full_load(open(input, 'r'))
             print(f"Starting PROSPECT from input file {input}")
@@ -46,3 +47,17 @@ def run(input: str):
 
     if mpi_rank == 0:
         print("PROSPECT finished. Enjoy!")
+
+def run_from_shell():
+    """
+        Wrapper for run() using a setuptools entry point
+        Allows running from command-line with the command `prospect input/test.yaml`
+        Only takes arguments using argparse
+
+    """
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('input_file', nargs='+')
+    args = parser.parse_args()
+    print(f"Running PROSPECT from shell with input {args.input_file[0]}")
+    run(args.input_file[0])
