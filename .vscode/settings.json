@@ -3,6 +3,6 @@
     "editor.fontFamily": "SF Mono, Menlo, Monaco, 'Courier New', monospace",
     "workbench.colorTheme": "Default Dark+",
     "python.linting.pylintEnabled": true,
-    "python.linting.enabled": true,
+    "python.linting.enabled": false,
     "python.linting.pylintArgs": ["--rcfile=~/.pylintrc"]
 }

@@ -1,10 +1,10 @@
 {
-    "version": "0.2.0",
+    "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "remove_output_folder",
-            "command": "trash ${workspaceFolder}/output/test01",
-            "isShellCommand": true
+            "label": "remove_output_folder",
+            "command": "if [ -d ${workspaceFolder}/output/test01 ]; then\n\ttrash ${workspaceFolder}/output/test01\nfi",
+            "type": "shell"
         }
     ]
 }
