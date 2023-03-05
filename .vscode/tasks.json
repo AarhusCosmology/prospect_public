@@ -2,8 +2,17 @@
     "version": "2.0.0",
     "tasks": [
         {
+            "label": "prepare_install_debug",
+            "dependsOn": ["remove_output_folder", "install_prospect"]
+        },
+        {
             "label": "remove_output_folder",
             "command": "if [ -d ${workspaceFolder}/output/test01 ]; then\n\ttrash ${workspaceFolder}/output/test01\nfi",
+            "type": "shell"
+        },
+        {
+            "label": "install_prospect",
+            "command": "python ${workspaceFolder}/setup.py install",
             "type": "shell"
         }
     ]

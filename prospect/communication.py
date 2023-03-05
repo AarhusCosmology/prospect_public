@@ -1,7 +1,7 @@
 import time
 from mpi4py import MPI
 import pickle 
-from tasks import OptimizeTask, MCMCTask, AnalyseMCMCTask, TaskStatus, TaskTags
+from prospect.tasks import OptimizeTask, MCMCTask, AnalyseMCMCTask, TaskStatus, TaskTags
 
 comm = MPI.COMM_WORLD
 mpi_rank = comm.Get_rank()

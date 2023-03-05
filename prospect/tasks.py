@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from kernel import initialize_kernel
-from mcmc import initialize_mcmc
-from optimizer import initialize_optimizer
+from prospect.kernel import initialize_kernel
+from prospect.mcmc import initialize_mcmc
+from prospect.optimizer import initialize_optimizer
 
 def enum(*sequential, **named):
     """Handy way to fake an enumerated type in Python

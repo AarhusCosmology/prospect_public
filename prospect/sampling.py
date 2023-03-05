@@ -1,4 +1,4 @@
-from tasks import OptimizeTask
+from prospect.tasks import OptimizeTask
 
 def ManualSampling(config_sampling_strategy):
     samples = []

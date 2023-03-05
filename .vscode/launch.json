@@ -5,15 +5,24 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "prospect main debug",
+            "name": "prospect direct debug",
             "type": "python",
             "request": "launch",
             "console": "integratedTerminal",
             "justMyCode": true,
 
             "preLaunchTask": "remove_output_folder",
-            "program": "${workspaceFolder}/prospect/prospect.py",
-            "args": ["input/test.yaml"]
-        }
+            "program": "${workspaceFolder}/test/debug.py"
+        },
+        {
+            "name": "prospect debug with install",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+
+            "preLaunchTask": "prepare_install_debug",
+            "program": "${workspaceFolder}/test/debug.py"
+        },
     ]
 }
