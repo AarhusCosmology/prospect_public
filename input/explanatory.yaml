@@ -5,6 +5,7 @@ overwrite_output_dir: 'yes'
 # General settings
 jobname: 'test'
 jobtype: 'mcmc' # 'mcmc' or 'profile'
+run_mode: 'serial' # (default: 'mpi')
 
 # approximate amount of seconds between snapshot dumping
 snapshot_interval: 10

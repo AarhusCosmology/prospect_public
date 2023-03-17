@@ -20,7 +20,7 @@ Additionally, PROSPECT can be run either from the command line or interactively 
 
 To run from the command line:
 
-` prospect input/test.yaml `
+` prospect input/debug.yaml `
 
 To run from inside a Python script:
 

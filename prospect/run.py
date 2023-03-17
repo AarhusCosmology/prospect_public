@@ -1,54 +1,42 @@
-import os
-import pickle
-import yaml
-from mpi4py import MPI
+import sys
+from prospect.communication import Scheduler
+from prospect.input import read_config, prepare_run
 
-def run(input: str):
-    comm = MPI.COMM_WORLD
-    mpi_rank = comm.Get_rank()
-    mpi_size = comm.Get_size()
+def run(arg: str) -> None:
+    config = read_config(arg)
 
-    if mpi_rank == 0:
-        print(input, type(input))
-        if os.path.isfile(input):
-            config = yaml.full_load(open(input, 'r'))
-            print(f"Starting PROSPECT from input file {input}")
-            state = {}
-            if os.path.isdir(config['output_dir']):
-                raise ValueError('Your argument is already a folder. Remove it and try again!')
-            os.system(f"mkdir {config['output_dir']}")
-            os.system(f"cp {input} {config['output_dir']}")
-        elif os.path.isdir(input):
-            if not os.path.isfile(f"{input}/state.pkl"):
-                raise ValueError('No state.pkl found in your argument folder. Please provide either a folder with a PROSPECT state.pkl dump or an input.yaml file.')
-            else:
-                with open(f"{input}/state.pkl", "rb") as state_file:
-                    state = pickle.load(state_file)
-                config = yaml.full_load(open(f"{input}/config.yaml", 'r'))
-            print(f"Resuming from PROSPECT snapshop in {input}")
-        else:
-            raise ValueError('Invalid arguments to PROSPECT. Give either a .yaml input file or the folder of a previous PROSPECT run.')
-        if mpi_size > 1:
-            print(f"Running PROSPECT on {mpi_size} processes...")
-            from prospect.communication import Scheduler
-            scheduler = Scheduler(config, state)
-            scheduler.delegate()
-            print("Scheduler finished")
-        else:
-            print("Running PROSPECT serially, without MPI...")
-            from prospect.communication import Serial
-            serial = Serial(config, state)
-            serial.run()
+    if config['run_mode'] == 'mpi':
+        from mpi4py import MPI
+        from mpi4py.futures import MPICommExecutor
+        comm = MPI.COMM_WORLD
+        if comm.Get_size() == 1:
+            raise ValueError('You cannot run PROSPECT using MPI with only one process.')
+        pool = MPICommExecutor
+        pool_args, pool_kwargs = [comm], {'root': 0}
+    elif config['run_mode'] == 'threaded':
+        from concurrent.futures import ProcessPoolExecutor
+        pool = ProcessPoolExecutor
+        pool_args, pool_kwargs = [], {'max_workers': config['n_procs']}
+    elif config['run_mode'] == 'serial':
+        from prospect.communication import SerialContext
+        pool = SerialContext
+        pool_args, pool_kwargs = [], {}
     else:
-        from prospect.communication import Worker
-        worker = Worker()
-        worker.work()
-        print(f"Worker {mpi_rank} finished")
+        raise ValueError(f"Run mode '{config['run_mode']}' not recognized. Choose either 'mpi', 'threaded' or 'serial'.")
 
-    if mpi_rank == 0:
-        print("PROSPECT finished. Enjoy!")
+    with pool(*pool_args, **pool_kwargs) as executor:
+        if executor is not None:
+            print(f"Running PROSPECT with mode *{config['run_mode']}* on {config['n_procs']} processes...")
+            state = prepare_run(arg, config)
+            scheduler = Scheduler(config, state)
+            scheduler.delegate(executor)
 
-def run_from_shell():
+    if config['run_mode'] == 'mpi':
+        comm.Barrier()
+        MPI.Finalize()
+    sys.exit(0)
+
+def run_from_shell() -> None:
     """
         Wrapper for run() using a setuptools entry point
         Allows running from command-line with the command `prospect input/test.yaml`
@@ -59,5 +47,4 @@ def run_from_shell():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_file', nargs='+')
     args = parser.parse_args()
-    print(f"Running PROSPECT from shell with input {args.input_file[0]}")
     run(args.input_file[0])

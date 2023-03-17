@@ -1,0 +1,28 @@
+
+output_dir: 'output/debug'
+overwrite_output_dir: 'yes'
+write_output: True
+
+# General settings
+jobname: 'test'
+jobtype: 'mcmc' # 'mcmc' or 'profile'
+run_mode: 'serial' # (default: 'mpi')
+
+# approximate amount of seconds between snapshot dumping
+snapshot_interval: 10
+
+kernel: 
+     type: 'analytical'
+     function: 'gaussian'
+     dimension: 2
+     prior: [[-3.0, 3.0], [-3.0, 3.0]]
+     mean:   [1.0, 1.0]
+     covmat: [[0.5, 0.0],
+              [0.0, 0.8]]
+
+mcmc:
+     N_chains: 4
+     N_steps: 1000
+     algorithm: 'MetropolisHastings'
+     covmat: [[0.1, 0.0], 
+               [0.0, 0.1]]
