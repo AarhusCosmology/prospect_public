@@ -1,0 +1,7 @@
+Marginalized limits: 0.68; 0.95; 0.99
+
+parameter   mean           sddev          lower1         upper1         limit1 lower2         upper2         limit2 lower3         upper3         limit3 
+x1          9.0269383E-01  5.8992101E-01  8.7516096E-01  1.0424471E+00  two   -9.8329488E-01  1.8771292E+00  two   -2.2039605E+00  2.6615437E+00  two     x1
+x2          8.5690042E-01  6.9714629E-01  8.9419050E-01  1.1027833E+00  two   -1.6234267E+00  1.8620094E+00  two   -3.0000000E+00  2.3393956E+00  >       x2
+
+R-1: 0.035978908396362266

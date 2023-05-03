@@ -1,0 +1,8 @@
+prospect.egg-info
+prospect/__pycache__
+output
+__pycache__
+build
+dist
+notes
+files.txt

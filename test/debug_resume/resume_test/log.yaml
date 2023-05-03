@@ -1,0 +1,27 @@
+io:
+  dir: output/debug
+  jobname: test
+  overwrite_dir: 'yes'
+  resume: false
+  snapshot_interval: 5.0
+  write: true
+kernel:
+  param: input/kernel_gauss.yaml
+  type: analytical
+mcmc:
+  N_chains: 4
+  N_steps: 5000
+  algorithm: MetropolisHastings
+  analyse_automatically: true
+  convergence_Rm1: 0.0001
+  covmat:
+  - - 0.1
+    - 0.0
+  - - 0.0
+    - 0.1
+  temperature: 1.0
+  unpack_at_dump: true
+run:
+  jobtype: mcmc
+  mode: serial
+  num_processes: 1

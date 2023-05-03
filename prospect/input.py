@@ -1,73 +1,127 @@
+import inspect
 import os
-import pickle
 import shutil
 import yaml
-from typing import Any
-from prospect.communication import TasksState
+from abc import ABC
+from dataclasses import dataclass, field
+from types import UnionType
+from typing import Any, get_args, get_origin, Union
 
-def read_config(arg: str) -> dict[str, Any]:
-    if os.path.isfile(arg):
-        config = yaml.full_load(open(arg, 'r'))
-    elif os.path.isdir(arg):
-        # arg is folder, get the .yaml stored inside
-        config = yaml.full_load(open(f"{arg}/{arg}.yaml", 'r'))
-    else:
-        raise ValueError('Invalid arguments to PROSPECT. Give either a .yaml input file or the folder of a previous PROSPECT run.')
-    check_requirements(config)
-    check_valid_values(config)
-    set_defaults(config)
-    set_output_dir(config)
-    return config
+class Configuration:
+    def __init__(self, config_yaml):
+        """config_yaml is the dictionary read from the input .yaml file."""
+        print("Reading input.")
+        import prospect
+        # When new arguments are implemented, add them here
+        modules = {
+            'run':  prospect.run, 
+            'io':   prospect.io,
+            'mcmc': prospect.mcmc,
+            'kernel': prospect.kernels.base_kernel
+        }
 
-def check_requirements(config: dict[str, Any]) -> None:
-    pass
+        self.set_defaults_iterative(modules, config_yaml)
+        self.validate_parameters(modules, config_yaml)
+        self.set_output_dir(config_yaml['io'])
 
-def check_valid_values(config: dict[str, Any]) -> None:
-    pass
+        # Set parameters as attributes
+        self.config_dict = config_yaml
+        for module_name, module in modules.items():
+            setattr(self, module_name, module.Arguments(**config_yaml[module_name]))
+        
+        print("Succeeded in setting defaults and validating inputs.")
+        print("------------------------------")
+    
 
-def set_defaults(config: dict[str, Any]) -> None:
-    if 'n_procs' not in config:
-        if config['run_mode'] == 'mpi':
-            from mpi4py import MPI
-            config['n_procs'] = MPI.COMM_WORLD.Get_size()
-        elif config['run_mode'] == 'threaded':
-            config['n_procs'] = os.cpu_count() or 1
-        elif config['run_mode'] == 'serial':
-            config['n_procs'] = 1
-    if 'overwrite_output' not in config:
-        config['overwrite_output'] = False
+    def set_defaults_iterative(self, modules: list, config_yaml) -> None:
+        num_read = 1
+        while num_read > 0:
+            num_read = 0
+            failed_args = []
 
-def set_output_dir(config: dict[str, Any]) -> None:
-    # Sets output dir depending on whether to overwrite
-    if config['write_output']:
-        if os.path.isdir(config['output_dir']):
-            if config['overwrite_output']:
-                shutil.rmtree(config['output_dir'])
+            # Set default values
+            for module_name, module in modules.items():
+                print(f"Setting defaults for module '{module_name}'.")
+                
+                for arg_name, input_arg in self.arguments_iterator(module.Arguments):
+                    try:
+                        if not arg_name in config_yaml[module_name]:
+                            config_yaml[module_name][arg_name] = input_arg().get_default(config_yaml)
+                            print(f"Argument {arg_name} not found in input, set to default value {config_yaml[module_name][arg_name]}.")
+                            num_read += 1
+                    except Exception as e:
+                        print(f"Failed setting parameter '{arg_name}'. Exception message:\n{e}")
+                        failed_args.append(arg_name)
+            if num_read == 0:
+                if not failed_args:
+                    print(f"End of iterative default setting, continuing to validation.")
+                else:
+                    raise ValueError(f"Could not set default value for inputs {failed_args}.")
             else:
-                output_idx = 0
-                while True:
-                    if os.path.isdir(f"{config['output_dir']}_{output_idx}"):
-                        output_idx += 1
-                    else:
-                        break
-                config['output_dir'] = f"{config['output_dir']}_{output_idx}"
-                    
-    print(config['output_dir'])
+                print(f"Set {num_read} default parameter(s), reiterating.")
 
-def prepare_run(arg: str, config: dict[str, Any]) -> bool | TasksState:
-    if os.path.isfile(arg):
-        # arg is an input file, start from it
-        if config['write_output']:
-            os.makedirs(config['output_dir'], exist_ok=False)
-            shutil.copy(arg, config['output_dir'])
-            print(f"Starting PROSPECT from input file {arg}.")
-        return False # No state to resume from
-    elif os.path.isdir(arg):
-        # arg is folder, restart from that folder
-        if not os.path.isfile(f"{arg}/state.pkl"):
-            raise ValueError('No state.pkl found in your argument folder. Please provide either a folder with a PROSPECT state.pkl dump or an input.yaml file.')
-        else:
-            with open(f"{arg}/state.pkl", "rb") as state_file:
-                state = pickle.load(state_file)
-            print(f"Resuming from PROSPECT snapshop in {arg}.")
-        return state
+    def arguments_iterator(self, arguments) -> list[str, Any]:
+        # arguments is an instance of an Arguments class defined in the particular module
+        out = inspect.getmembers(arguments, inspect.isclass)
+        for idx, (name, arg) in enumerate(out):
+            if name == '__class__':
+                out.pop(idx)
+        return out
+
+    def validate_parameters(self, modules, config_yaml) -> None:
+        for module_name, module in modules.items():
+            print(f"Validating input from {module_name}.")
+            for arg_name, input_arg in self.arguments_iterator(module.Arguments):
+                self.validate_generic(input_arg, config_yaml[module_name][arg_name])
+                input_arg().validate(config_yaml[module_name])
+
+    def validate_generic(self, arg, arg_val: Any) -> None:
+        if arg.val_type is not None:
+            if get_origin(arg.val_type) in [Union, UnionType]:
+                if not type(arg_val) in get_args(arg.val_type):
+                    raise ValueError(f"Input '{arg().name}' was given type value of {type(arg_val)} which is not one of the allowed types: {get_args(arg.val_type)}.")
+            else:
+                if not type(arg_val) == arg.val_type:
+                    raise ValueError(f"Input '{arg().name}' was given type value of {type(arg_val)}, but only type {arg.val_type} is allowed.")
+        if arg.allowed_values is not None:
+            if not arg_val in arg.allowed_values:
+                raise ValueError(f"Input '{arg().name}' was given value {arg_val} which not in the list of allowed values: {arg.allowed_values}")
+
+    def set_output_dir(self, config_io) -> None:
+        # Sets output dir depending on whether to overwrite
+        if config_io['resume']:
+            # config_io['dir'] was set in read_config
+            pass
+        elif config_io['write']:
+            if os.path.isdir(config_io['dir']):
+                if config_io['overwrite_dir']:
+                    shutil.rmtree(config_io['dir'])
+                else:
+                    output_idx = 0
+                    while True:
+                        if os.path.isdir(f"{config_io['dir']}_{output_idx}"):
+                            output_idx += 1
+                        else:
+                            break
+                    config_io['dir'] = f"{config_io['dir']}_{output_idx}"
+
+@dataclass
+class InputArgument(ABC):
+    # If set, will check that the correct type is given
+    val_type: Any = field(default=None) 
+
+    # If not specified, all values are allowed
+    allowed_values: list = field(default=None)
+
+    # Specify default values as functions of other arguments
+    def get_default(self, config_yaml: dict[str, Any]):
+        # config_yaml is the entire input dictionary
+        raise ValueError(f"The input '{self.name}' has no default and must be specified.")
+        
+    def validate(self, config: dict[str, Any]) -> None:
+        # config is the config_yaml[module] input dict, after settings default values, where module is the module that this argument is defined in 
+        pass
+
+    @property
+    def name(self) -> str:
+        return self.__class__.__name__

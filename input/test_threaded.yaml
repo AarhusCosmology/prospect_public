@@ -1,28 +1,26 @@
 
-output_dir: 'output/test_threaded'
-overwrite_output_dir: 'yes'
-write_output: False
+io:
+     jobname: 'test'
+     write: True
+     dir: 'output/debug'
+     overwrite_dir: 'yes'
+     snapshot_interval: 10 
 
-# General settings
-jobname: 'test'
-jobtype: 'mcmc' # 'mcmc' or 'profile'
-run_mode: 'threaded' # 'mpi' (default), 'threaded' or 'serial'
+run:
+     jobtype: 'mcmc'
+     mode: 'serial'
 
-# approximate amount of seconds between snapshot dumping
-snapshot_interval: 10
-
-kernel: 
+kernel:
      type: 'analytical'
-     function: 'gaussian'
-     dimension: 2
-     prior: [[-3.0, 3.0], [-3.0, 3.0]]
-     mean:   [1.0, 1.0]
-     covmat: [[0.5, 0.0],
-              [0.0, 0.8]]
+     # .param file for MontePython, .yaml for cobaya, dict for analytical
+     # relative to directory of the current file
+     param: 'input/kernel_gauss.yaml' 
 
 mcmc:
-     N_chains: 4
-     N_steps: 1000
+     N_chains: 8
+     N_steps: 15000
+     convergence_Rm1: 0.01
      algorithm: 'MetropolisHastings'
      covmat: [[0.1, 0.0], 
                [0.0, 0.1]]
+     unpack_at_dump: True

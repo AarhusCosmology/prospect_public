@@ -1,0 +1,22 @@
+Status of job 'test'
+Jobtype: mcmc
+Started: 2023-05-02 21:02:29.156592
+
+=== IN PROGRESS ==========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+=== QUEUED, READY =========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+7    5      MCMCTask             	 Tue May  2 21:02:33 2023      
+9    5      MCMCTask             	 Tue May  2 21:02:33 2023      
+=== QUEUED, NOT READY ====================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+10   5      AnalyseMCMCTask      	 Tue May  2 21:02:33 2023      
+=== DONE ================================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+1    -      MCMCTask             	 Tue May  2 21:02:29 2023       Tue May  2 21:02:29 2023       Tue May  2 21:02:29 2023      
+3    -      MCMCTask             	 Tue May  2 21:02:29 2023       Tue May  2 21:02:29 2023       Tue May  2 21:02:30 2023      
+2    -      MCMCTask             	 Tue May  2 21:02:29 2023       Tue May  2 21:02:30 2023       Tue May  2 21:02:31 2023      
+4    -      MCMCTask             	 Tue May  2 21:02:29 2023       Tue May  2 21:02:31 2023       Tue May  2 21:02:32 2023      
+5    -      AnalyseMCMCTask      	 Tue May  2 21:02:29 2023       Tue May  2 21:02:32 2023       Tue May  2 21:02:33 2023      
+6    5      MCMCTask             	 Tue May  2 21:02:33 2023       Tue May  2 21:02:33 2023       Tue May  2 21:02:34 2023      
+8    5      MCMCTask             	 Tue May  2 21:02:33 2023       Tue May  2 21:02:34 2023       Tue May  2 21:02:34 2023      
