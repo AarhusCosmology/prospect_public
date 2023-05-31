@@ -9,17 +9,17 @@ def get_gelman_rubin(chain_list: list[Chain]) -> float:
     remove_burnin(chain_list)
 
     # Possibly split chains into subchains; although MP doesn't do this I don't think
-    N_params = chain_list[0].positions[0].shape[0]
+    param_names = chain_list[0].positions.keys()
     N_chains = len(chain_list)
     Rm1 = []
-    for idx_param in range(N_params):
-        total_mean = np.mean([np.mean(np.stack(chain.positions)[:, idx_param]) for chain in chain_list])
+    for param_name in param_names:
+        total_mean = np.mean([np.mean(np.stack(chain.positions)[param_name]) for chain in chain_list])
         var_between, var_within = 0.0, 0.0
         for chain in chain_list:
-            positions = np.stack(chain.positions)
+            positions = np.stack(chain.positions[param_name])
             N_points = positions.shape[0]
-            var_between += (np.mean(positions[:, idx_param]) - total_mean)**2/(N_chains - 1)
-            var_within += N_points/(N_points - 1)/N_chains*np.mean((positions[:, idx_param] - np.mean(positions[:, idx_param]))**2)
+            var_between += (np.mean(positions) - total_mean)**2/(N_chains - 1)
+            var_within += N_points/(N_points - 1)/N_chains*np.mean((positions - np.mean(positions))**2)
         Rm1.append(var_between/var_within)
     # Not using square root; same convention as MontePython and CosmoMC
     return np.max(Rm1)
@@ -48,10 +48,13 @@ def analyse_mcmc(output_dir, jobname) -> None:
         os.makedirs(analysis_dir)
     with contextlib.redirect_stdout(open(os.path.join(analysis_dir, "getdist.out"), 'w')):
         with contextlib.redirect_stderr(open(os.path.join(analysis_dir, "getdist.err"), 'w')):
-            samples = loadMCSamples(os.path.join(output_dir, jobname))
-            with open(os.path.join(analysis_dir, f"{jobname}.stats"), 'w') as f:
-                print(samples.getMargeStats(), file=f)
-                f.write(f"R-1: {getdist_gelman_rubin(os.path.join(output_dir, jobname))}")
+            try:
+                samples = loadMCSamples(os.path.join(output_dir, jobname))
+                with open(os.path.join(analysis_dir, f"{jobname}.stats"), 'w') as f:
+                    print(samples.getMargeStats(), file=f)
+                    f.write(f"R-1: {getdist_gelman_rubin(os.path.join(output_dir, jobname))}")
+            except Exception as e:
+                raise ValueError(f'Could not analyse chain. Try increasing amount of steps or time per iteration. Original exception:\n{e}')
             g = plots.get_subplot_plotter()
             g.triangle_plot(samples, filled=True)
             g.export(os.path.join(output_dir, 'analysis', f"{jobname}_triangle.pdf"))

@@ -93,10 +93,8 @@ class Configuration:
             # config_io['dir'] was set in read_config
             pass
         elif config_io['write']:
-            if os.path.isdir(config_io['dir']):
-                if config_io['overwrite_dir']:
-                    shutil.rmtree(config_io['dir'])
-                else:
+            if not config_io['overwrite_dir']:
+                if os.path.isdir(config_io['dir']):
                     output_idx = 0
                     while True:
                         if os.path.isdir(f"{config_io['dir']}_{output_idx}"):

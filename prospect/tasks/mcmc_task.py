@@ -1,10 +1,8 @@
-from numpy import ndarray
+import os
 from typing import Type
-import heapq
-from prospect.kernels.initialise import initialise_kernel
+from prospect.kernels.initialisation import initialise_kernel
 from prospect.mcmc import initialise_mcmc
 from prospect.tasks.base_task import BaseTask
-
 from prospect.analysis import get_gelman_rubin, getdist_gelman_rubin, analyse_mcmc
 from prospect.input import Configuration
 from prospect.io import unpack_mcmc
@@ -21,9 +19,13 @@ class MCMCTask(BaseTask):
 
     def run(self, _) -> None:
         tic = time.perf_counter()
-        self.kernel = initialise_kernel(self.config.kernel)
-        self.mcmc = initialise_mcmc(self.config.mcmc, self.kernel, **self.mcmc_args)
-        self.mcmc.run_chain(self.config.mcmc.N_steps)
+        kernel = initialise_kernel(self.config.kernel, self.config.io.dir, self.id)
+        self.mcmc = initialise_mcmc(self.config.mcmc, kernel, **self.mcmc_args)
+        if self.config.mcmc.steps_per_iteration is not None:
+            self.mcmc.run_steps(self.config.mcmc.steps_per_iteration)
+        elif self.config.mcmc.minutes_per_iteration is not None:
+            self.mcmc.run_minutes(self.config.mcmc.minutes_per_iteration)
+        self.mcmc.finalize()
         toc = time.perf_counter()
         print(f"Finished MCMCTask of id {self.id} in {toc - tic:.2} seconds") # write to log instead 
 
@@ -33,27 +35,28 @@ class AnalyseMCMCTask(BaseTask):
     def __init__(self, config: Configuration, required_task_ids: list[int]):
         super().__init__(required_task_ids)
         self.config = config
+        self.dir = os.path.join(config.io.dir, config.run.jobtype)
 
     def run(self, mcmc_tasks: list[MCMCTask]): 
         tic = time.perf_counter()
         chains = [task.mcmc.chain for task in mcmc_tasks]
-        
+        kernel = initialise_kernel(self.config.kernel, self.config.io.dir, self.id)
+
         if self.config.mcmc.unpack_at_dump:
-            param_dict = mcmc_tasks[0].kernel.param['param_dict']
-            unpack_mcmc(param_dict, self.config.io.dir, self.config.io.jobname, *chains)
+            unpack_mcmc(kernel.param, self.dir, self.config.io.jobname, *chains)
             if self.config.mcmc.analyse_automatically:
-                analyse_mcmc(self.config.io.dir, self.config.io.jobname)
+                analyse_mcmc(self.dir, self.config.io.jobname)
 
         # Discrepancy wrt. the GetDist Gelman-Rubin; mine is stricter. Use GetDist's!
         if self.config.mcmc.unpack_at_dump:
             # Problem with this: It only works when unpacking the MCMC!
-            self.conv = getdist_gelman_rubin(f"{self.config.io.dir}/{self.config.io.jobname}")
+            self.conv = getdist_gelman_rubin(f"{self.dir}/{self.config.io.jobname}")
         else:
             raise ValueError("Currently cannot compute R-1 without unpacking MCMCs. Please set 'unpack_at_dump' to True.")
             self.conv = get_gelman_rubin(chains)
 
         self.mcmc_tasks = mcmc_tasks
-        self.initial_positions = [chain.positions[-1] for chain in chains]
+        self.initial_positions = [chain.last_position for chain in chains]
         toc = time.perf_counter()
         print(f"Finished AnalyseMCMCTask of id {self.id} in {toc - tic:.3} seconds") # write to log instead
 

@@ -18,7 +18,7 @@ kernel:
 
 mcmc:
      N_chains: 8
-     N_steps: 15000
+     steps_per_iteration: 15000
      convergence_Rm1: 0.01
      algorithm: 'MetropolisHastings'
      covmat: [[0.1, 0.0], 

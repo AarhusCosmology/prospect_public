@@ -21,7 +21,7 @@ kernel:
 
 mcmc:
      N_chains: 4
-     N_steps: 1000
+     steps_per_iteration: 1000
      algorithm: 'MetropolisHastings'
      covmat: [[0.1, 0.0], 
                [0.0, 0.1]]

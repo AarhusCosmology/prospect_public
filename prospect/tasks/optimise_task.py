@@ -1,5 +1,5 @@
 from prospect.tasks.base_task import BaseTask
-from prospect.kernels.initialise import initialise_kernel
+from prospect.kernels.initialisation import initialise_kernel
 from prospect.optimiser import initialise_optimiser
 
 class OptimiseTask(BaseTask):
@@ -11,7 +11,7 @@ class OptimiseTask(BaseTask):
         self.profile_parameter_value = param_sample
 
     def run(self):
-        self.kernel = initialise_kernel(self.config['kernel'])
+        self.kernel = initialise_kernel(self.config['kernel'], self.config.io.dir)
         self.optimiser = initialise_optimiser(self.config['optimizer'], self.kernel)
         self.optimiser.optimise()
         self.data = 0

@@ -11,19 +11,17 @@ run:
      mode: 'serial'
 
 kernel:
-     type: 'analytical'
-     # .param file for MontePython, .yaml for cobaya or analytical
-     # relative to directory prospect is called from
-     conf: ''
-     param: 'input/kernel_gauss.yaml' 
+     type: 'montepython'
+     param: 'input/montepython/h.param'
+     conf: 'input/montepython/class.conf'
 
 mcmc:
-     N_chains: 2
-     steps_per_iteration: 1000
+     N_chains: 4
+     steps_per_iteration: 100
      convergence_Rm1: 0.001
      algorithm: 'MetropolisHastings'
-     covmat: [[0.1, 0.0], 
-              [0.0, 0.1]]
      temperature: 1.0
      unpack_at_dump: True
      analyse_automatically: True
+     covmat: 'input/montepython/h.covmat'
+     initial_position: 'input/montepython/h.bestfit'

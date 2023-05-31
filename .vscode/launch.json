@@ -13,6 +13,14 @@
             "program": "${workspaceFolder}/test/debug.py"
         },
         {
+            "name": "prospect serial montepython",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "program": "${workspaceFolder}/test/debug_montepython.py"
+        },
+        {
             "name": "prospect resume debug",
             "type": "python",
             "request": "launch",

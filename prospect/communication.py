@@ -18,6 +18,7 @@ class TasksState:
     unready: dict[int, Type[BaseTask]]
     ongoing: dict[int, Type[BaseTask]]
     done:    dict[int, Type[BaseTask]]
+    failed:  dict[int, Type[BaseTask]]
     dependencies: defaultdict[int, list[int]]
 
 class Scheduler:
@@ -36,7 +37,7 @@ class Scheduler:
                 del self.tasks.ongoing[id]
         else:
             # Start from config file
-            self.tasks = TasksState([], {}, {}, {}, defaultdict(list))
+            self.tasks = TasksState([], {}, {}, {}, {}, defaultdict(list))
             new_tasks = initialise_tasks(self.config)
             for task in new_tasks:
                 self.push_task(task)
@@ -47,8 +48,11 @@ class Scheduler:
         # or concurrent.futures.ThreadPoolExecutor
         while True:
             if not self.tasks.queued:
-                if not self.tasks.unready:
-                    if not self.tasks.ongoing:
+                if not self.tasks.ongoing:
+                    if not self.tasks.unready:
+                        break
+                    elif self.tasks.failed:
+                        print(f"Exiting PROSPECT with one or more failed tasks.")
                         break
 
                 with self.condition:
@@ -88,9 +92,29 @@ class Scheduler:
             if req not in self.tasks.done:
                 return False 
         return True
+    
+    def fail_task(self, task: Type[BaseTask]) -> None:
+        print("\n-------------------------------------------------------------------")
+        print(f"WARNING! TASK {task.id} RAISED THE FOLLOWING EXCEPTION:\n")
+        print(task.error)
+        print(f"Moving the failed task to TasksState.failed and continuing.")
+        print("-------------------------------------------------------------------\n")
+        if hasattr(task, "mcmc.kernel"):
+            del task.mcmc.kernel
+        del self.tasks.ongoing[task.id]
+        self.tasks.failed[task.id] = task
+        with self.condition:
+            self.condition.notify_all()
 
     def finalize_task(self, future) -> None:
         finished_task = future.result() # BaseTask.run_return_self returns the task that was run 
+
+        # Handle tasks that raised an exception
+        if not finished_task.success:
+            self.fail_task(finished_task)
+            return
+
+        # Continue, assuming task finished succesfully
         finished_task.time_finish = datetime.now()
         del self.tasks.ongoing[finished_task.id]
         self.tasks.done[finished_task.id] = finished_task
@@ -141,23 +165,28 @@ class Scheduler:
 
         with open(os.path.join(self.config.io.dir, "status.txt"), 'w') as status_file:
             header = f"\n{'id':<{pad_id}} {'from':<{pad_emit}} {'task type':<{pad_tasktype}} \t {'Time when emitted':<{pad_time}} {'Time when started':<{pad_time}} {'Time when finished':<{pad_time}}"
-            status_file.write(f"Status of job '{self.config.io.jobname}'\nJobtype: {self.config.run.jobtype}\nStarted: {self.start_date}")
+            status_file.write(f"Status of job '{self.config.io.jobname}'\nJobtype: {self.config.run.jobtype}\nStarted: {self.start_date}\nLast updated: {datetime.now()}")
+            status_file.write("\n\n=== FAILED ==============================================")
+            status_file.write(header)
+            for task_id, task_failed in self.tasks.failed.items():
+                status_file.write(get_write_line(task_failed))
             status_file.write("\n\n=== IN PROGRESS ==========================================")
             status_file.write(header)
             for task_id, task_ongoing in self.tasks.ongoing.items():
                 status_file.write(get_write_line(task_ongoing))
-            status_file.write("\n=== QUEUED, READY =========================================")
+            status_file.write("\n\n=== QUEUED, READY =========================================")
             status_file.write(header)
             for task in self.tasks.queued:
                 status_file.write(get_write_line(task))
-            status_file.write("\n=== QUEUED, NOT READY ====================================")
+            status_file.write("\n\n=== QUEUED, NOT READY ====================================")
             status_file.write(header)
             for task_id, task_unready in self.tasks.unready.items():
                 status_file.write(get_write_line(task_unready))
-            status_file.write("\n=== DONE ================================================")
+            status_file.write("\n\n=== DONE ================================================")
             status_file.write(header)
             for task_id, task_done in self.tasks.done.items():
                 status_file.write(get_write_line(task_done))
+            status_file.write("\n")
     
 class SerialContext:
     class MockFuture:

@@ -1,12 +1,14 @@
 from abc import ABC, abstractmethod
 from datetime import date
 from typing import Any
+import traceback
 
 class BaseTask(ABC):
     idx_count = -1
     priority: float
     required_task_ids: list[int]
     data: Any # Result from self.run() method is stored here
+    success: bool
 
     time_launch: date = None
     time_emit: date = None
@@ -34,8 +36,15 @@ class BaseTask(ABC):
         return []
 
     def run_return_self(self, *args):
-        self.run(*args)
-        return self
+        self.success = True
+        self.error = None
+        try:
+            self.run(*args)
+            return self
+        except Exception as e:
+            self.success = False
+            self.error = traceback.format_exc()
+            return self
 
     def __lt__(self, other):
         # Largest numerical value of priority is greatest

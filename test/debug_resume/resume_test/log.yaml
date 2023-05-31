@@ -10,7 +10,7 @@ kernel:
   type: analytical
 mcmc:
   N_chains: 4
-  N_steps: 5000
+  steps_per_iteration: 5000
   algorithm: MetropolisHastings
   analyse_automatically: true
   convergence_Rm1: 0.0001
