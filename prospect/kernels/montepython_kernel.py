@@ -36,16 +36,17 @@ class MontePythonKernel(BaseKernel):
         self.dimension = len(list(mp['data'].mcmc_parameters.keys()))
         self.mp = mp
         self.config_kernel = config_kernel
-    
-    def set_parameter_dict(self):
-        self.param = {}
+
+    def set_priors(self):
         for param_name, param_dict in self.varying_param_dict.items():
-            self.param[param_name] = {}
-            self.param[param_name]['prior'] = param_dict['prior'].prior_range
+            # Priors are set before moving parameters to fixed
+            self.param['varying'][param_name]['prior'] = param_dict['prior'].prior_range
 
     def loglkl(self, position):
-        for param_name, param_dict in self.varying_param_dict.items():
-            param_dict['current'] = position[param_name]
+        for param_name, param in self.param['varying'].items():
+            self.mp['data'].mcmc_parameters[param_name]['current'] = position[param_name]
+        for param_name, param in self.param['fixed'].items():
+            self.mp['data'].mcmc_parameters[param_name]['current'] = param['fixed_value']
         self.mp['data'].update_cosmo_arguments()
         with contextlib.redirect_stdout(open(os.path.join(self.mp_dir, '.out'), 'a+')):
             with contextlib.redirect_stderr(open(os.path.join(self.mp_dir, '.err'), 'a+')):
@@ -62,16 +63,16 @@ class MontePythonKernel(BaseKernel):
         initial = {}
         for param_name, param in self.varying_param_dict.items():
             if 'last_accepted' in param:
-                initial[param_name] = param['last_accepted']
+                initial[param_name] = [param['last_accepted']]
             else:
-                initial[param_name] = param['initial'][0]
+                initial[param_name] = [param['initial'][0]]
         return initial
 
     def get_default_initial_position(self):
         # Set initial values to mean values given in MP parameter file
         initial = {}
         for param_name, param in self.varying_param_dict.items():
-            initial[param_name] = param['initial'][0]
+            initial[param_name] = [param['initial'][0]]
         return np.array(initial)
 
     def get_default_covmat(self):

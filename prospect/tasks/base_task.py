@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from datetime import date
+import time
 from typing import Any
 import traceback
+from prospect.input import Configuration
 
 class BaseTask(ABC):
     idx_count = -1
@@ -15,7 +17,8 @@ class BaseTask(ABC):
     time_finish: date = None
     emitted_by: int = None
 
-    def __init__(self, required_task_ids=[]):
+    def __init__(self, config: Configuration, required_task_ids=[]):
+        self.config = config
         self.id = BaseTask.idx_count
         if self.id < 0:
             raise ValueError('Tried initializing a task with negative id, probably because emit_tasks was called by a worker process.')
@@ -39,7 +42,10 @@ class BaseTask(ABC):
         self.success = True
         self.error = None
         try:
+            tic = time.perf_counter()
             self.run(*args)
+            toc = time.perf_counter()
+            print(f"Finished task of type {self.type} and id {self.id} in {toc - tic:.3} seconds")
             return self
         except Exception as e:
             self.success = False

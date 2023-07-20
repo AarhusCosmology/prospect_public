@@ -1,9 +1,8 @@
 import inspect
 import os
-import shutil
-import yaml
 from abc import ABC
 from dataclasses import dataclass, field
+from importlib import import_module
 from types import UnionType
 from typing import Any, get_args, get_origin, Union
 
@@ -11,14 +10,21 @@ class Configuration:
     def __init__(self, config_yaml):
         """config_yaml is the dictionary read from the input .yaml file."""
         print("Reading input.")
-        import prospect
         # When new arguments are implemented, add them here
         modules = {
-            'run':  prospect.run, 
-            'io':   prospect.io,
-            'mcmc': prospect.mcmc,
-            'kernel': prospect.kernels.base_kernel
+            'run':    import_module('prospect.run'), 
+            'io':     import_module('prospect.io'),
+            'kernel': import_module('prospect.kernels.base_kernel')
         }
+        if 'run' in config_yaml and 'jobtype' in config_yaml['run']:
+            if config_yaml['run']['jobtype'] == 'mcmc':
+                modules['mcmc'] = import_module('prospect.mcmc')
+            elif config_yaml['run']['jobtype'] == 'profile':
+                modules['profile'] = import_module('prospect.profile')
+            else:
+                raise ValueError("The given value of 'jobtype' is not recognised. Choose either 'mcmc' or 'profile'.")
+        else:
+            raise ValueError("You must give 'jobtype' as an input under the 'run' category.")
 
         self.set_defaults_iterative(modules, config_yaml)
         self.validate_parameters(modules, config_yaml)

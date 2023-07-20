@@ -108,9 +108,7 @@ def write_parameters(param_dict, output_dir, jobname, latex_names=None) -> None:
 def write_chains(output_dir, jobname, *chain_list) -> None:
     """Stores chain contents to disk."""
     for idx_chain, chain in enumerate(chain_list):
-        pos = np.array(list(chain.positions.values()))
-        output = np.concatenate([np.stack([chain.mults, chain.loglkls], axis=0), pos], axis=0).T
-        np.savetxt(f"{output_dir}/{jobname}_{idx_chain}.txt",  output, delimiter=' ')
+        np.savetxt(f"{output_dir}/{jobname}_{idx_chain}.txt",  chain.data, delimiter=' ')
 
 
 """

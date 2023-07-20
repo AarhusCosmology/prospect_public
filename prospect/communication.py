@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Type
 from dataclasses import dataclass
 from prospect.tasks.base_task import BaseTask
+from prospect.tasks.analyse_profile_task import AnalyseProfileTask
 from prospect.tasks.initialise import initialise_tasks
 from multiprocessing import Condition
 
@@ -63,9 +64,12 @@ class Scheduler:
             task_requirements = [self.tasks.done[idx] for idx in ready_task.required_task_ids]
             executor.submit(ready_task.run_return_self, task_requirements).add_done_callback(self.finalize_task)
 
-    def finalize(self) -> None:
+    def finalize(self, executor) -> None:
         # Things to do before shutting down
         if self.config.io.write:
+            if self.config.run.jobtype == 'profile':
+                analysis_task = self.get_profile_analysis()
+                analysis_task.run([task for task in self.tasks.done.values() if task.id in analysis_task.required_task_ids])
             self.dump_snapshot()
             self.status_update()
 
@@ -137,8 +141,12 @@ class Scheduler:
 
         if self.config.io.write:
             if time.time() > self.next_dump_time:
+                if self.config.run.jobtype == 'profile' and finished_task.type != 'AnalyseProfileTask':
+                    # Bad: Don't just give all OptimiseTasks!
+                    self.push_task(self.get_profile_analysis())
                 self.dump_snapshot()
                 self.status_update()
+
                 self.next_dump_time = time.time() + self.config.io.snapshot_interval
     
     def dump_snapshot(self) -> None:
@@ -187,6 +195,10 @@ class Scheduler:
             for task_id, task_done in self.tasks.done.items():
                 status_file.write(get_write_line(task_done))
             status_file.write("\n")
+    
+    def get_profile_analysis(self) -> AnalyseProfileTask:
+        required_tasks = [id for id, task in self.tasks.done.items() if task.type == 'OptimiseTask' or task.type == 'InitialiseOptimiserTask']
+        return AnalyseProfileTask(self.config, required_tasks)
     
 class SerialContext:
     class MockFuture:

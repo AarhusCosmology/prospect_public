@@ -9,21 +9,22 @@ io:
 run:
      jobtype: 'mcmc'
      mode: 'serial'
+     numpy_random_seed: 0
 
 kernel:
      type: 'analytical'
      # .param file for MontePython, .yaml for cobaya or analytical
      # relative to directory prospect is called from
      conf: ''
-     param: 'input/kernel_gauss.yaml' 
+     param: 'input/kernel_random_gauss.yaml' 
 
 mcmc:
-     N_chains: 2
-     steps_per_iteration: 1000
-     convergence_Rm1: 0.001
+     N_chains: 4
+     steps_per_iteration: 2000
+     convergence_Rm1: 0.0001
      algorithm: 'MetropolisHastings'
-     covmat: [[0.1, 0.0], 
-              [0.0, 0.1]]
+#     covmat: [[0.1, 0.0], 
+#              [0.0, 0.1]]
      temperature: 1.0
      unpack_at_dump: True
-     analyse_automatically: True
+     analyse_automatically: False

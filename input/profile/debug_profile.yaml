@@ -1,0 +1,43 @@
+io:
+     jobname: 'test'
+     write: True
+     # relative to directory prospect is called from
+     dir: 'output/debug_profile'
+     overwrite_dir: 'yes'
+     snapshot_interval: 2.5
+
+run:
+     jobtype: 'profile'
+     mode: 'serial'
+
+kernel:
+     type: 'analytical'
+     conf: ''
+     param: 'input/kernel_load_random_gauss.yaml'
+
+profile:
+    parameter: 'x2'
+    values: [-1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.50, 1.75, 2.0]
+    #values: [0.2]
+
+    optimiser: 'simulated annealing'
+    temperature_schedule: 'exponential'
+    temperature_range: [0.1, 0.001]
+
+    step_size_schedule: 'exponential'
+    step_size_range: [1, 0.01]
+
+    minutes_per_iteration: 0.01
+    max_iterations: 20
+    repetitions: 1
+
+    start_from_mcmc: 'input/profile/analytical_random_gauss/mcmc/test'
+    #start_from_mcmc: 'input/profile/analytical_gauss/mcmc/test'
+    start_bin_fraction: 0.1
+
+    plot_profile: True
+    detailed_plot: True
+    plot_Delta_chi2: False
+    plot_schedule: True
+
+    chi2_tolerance: 0.1

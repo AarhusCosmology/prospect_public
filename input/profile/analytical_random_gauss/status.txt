@@ -1,0 +1,39 @@
+Status of job 'test'
+Jobtype: mcmc
+Started: 2023-07-19 13:17:21.504385
+Last updated: 2023-07-19 13:17:32.206248
+
+=== FAILED ==============================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== IN PROGRESS ==========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== QUEUED, READY =========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+18   15     MCMCTask             	 Wed Jul 19 13:17:31 2023      
+17   15     MCMCTask             	 Wed Jul 19 13:17:31 2023      
+19   15     MCMCTask             	 Wed Jul 19 13:17:31 2023      
+
+=== QUEUED, NOT READY ====================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+20   15     AnalyseMCMCTask      	 Wed Jul 19 13:17:31 2023      
+
+=== DONE ================================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+1    -      MCMCTask             	 Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:22 2023      
+3    -      MCMCTask             	 Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:22 2023       Wed Jul 19 13:17:23 2023      
+2    -      MCMCTask             	 Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:23 2023       Wed Jul 19 13:17:23 2023      
+4    -      MCMCTask             	 Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:23 2023       Wed Jul 19 13:17:24 2023      
+5    -      AnalyseMCMCTask      	 Wed Jul 19 13:17:21 2023       Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:24 2023      
+6    5      MCMCTask             	 Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:25 2023      
+8    5      MCMCTask             	 Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:25 2023       Wed Jul 19 13:17:26 2023      
+7    5      MCMCTask             	 Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:26 2023       Wed Jul 19 13:17:27 2023      
+9    5      MCMCTask             	 Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:27 2023       Wed Jul 19 13:17:27 2023      
+10   5      AnalyseMCMCTask      	 Wed Jul 19 13:17:24 2023       Wed Jul 19 13:17:27 2023       Wed Jul 19 13:17:28 2023      
+11   10     MCMCTask             	 Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:28 2023      
+13   10     MCMCTask             	 Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:29 2023      
+12   10     MCMCTask             	 Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:29 2023       Wed Jul 19 13:17:30 2023      
+14   10     MCMCTask             	 Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:30 2023       Wed Jul 19 13:17:31 2023      
+15   10     AnalyseMCMCTask      	 Wed Jul 19 13:17:28 2023       Wed Jul 19 13:17:31 2023       Wed Jul 19 13:17:31 2023      
+16   15     MCMCTask             	 Wed Jul 19 13:17:31 2023       Wed Jul 19 13:17:31 2023       Wed Jul 19 13:17:32 2023      

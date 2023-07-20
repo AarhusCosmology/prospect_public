@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import os
 import sys
+from types import NoneType
+from typing import Any
 from prospect.communication import Scheduler
 from prospect.io import prepare_run, read_config
 from prospect.input import Configuration, InputArgument
@@ -34,7 +36,7 @@ def run(user_inp: str) -> None:
             state = prepare_run(user_inp, config)
             scheduler = Scheduler(config, state)
             scheduler.delegate(executor)
-            scheduler.finalize()
+            scheduler.finalize(executor)
 
     if config.run.mode == 'mpi':
         comm.Barrier()
@@ -80,7 +82,17 @@ class Arguments:
                 return os.cpu_count() or 1
             elif config_yaml['run']['mode'] == 'serial':
                 return 1
+    
+    class numpy_random_seed(InputArgument):
+        val_type = float | int | NoneType
+        def get_default(self, config_yaml: dict[str, Any]):
+            return None
+        def validate(self, config: dict[str, Any]) -> None:
+            if config['numpy_random_seed'] is not None:
+                import numpy as np 
+                np.random.seed(config['numpy_random_seed'])
 
     jobtype: jobtype
     mode: mode
     num_processes: num_processes
+    numpy_random_seed: numpy_random_seed

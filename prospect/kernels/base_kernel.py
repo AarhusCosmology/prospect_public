@@ -14,14 +14,36 @@ class BaseKernel(ABC):
     @abstractmethod
     def initialise(self, kernel_param):
         pass
-
-    @abstractmethod
+    
     def set_parameter_dict(self):
         """
             Must set self.param, a dict with keys that are parameter names
-            Values must be a dict with keys:
-                - prior: a tuple of (lower, upper) bound of the uniform prior
-                
+        """
+        self.param = {
+            'varying': {},
+            'fixed': {}
+        }
+
+        for param_name in self.config['param_dict'].keys():
+            self.param['varying'][param_name] = {}
+        self.set_priors()
+
+    def set_fixed_parameters(self, fixed_param_dict):
+        for param_name, fixed_value in fixed_param_dict.items():
+            # Move parameter to the fixed dict
+            self.param['fixed'][param_name] = self.param['varying'][param_name]
+            self.param['fixed'][param_name]['fixed_value'] = fixed_value
+            del self.param['varying'][param_name]
+    
+    @property
+    def varying_param_names(self):
+        return list(self.param['varying'].keys())
+    
+    @abstractmethod
+    def set_priors(self):
+        """
+            For each key in self.param, must set:
+            - prior: a tuple of (lower, upper) bound of the uniform prior     
         """
         pass
 

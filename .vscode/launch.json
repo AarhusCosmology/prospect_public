@@ -27,6 +27,14 @@
             "console": "integratedTerminal",
             "justMyCode": true,
             "program": "${workspaceFolder}/test/debug_resume.py"
+        },
+        {
+            "name": "prospect profile debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "program": "${workspaceFolder}/test/debug_profile.py"
         }
     ]
 }
