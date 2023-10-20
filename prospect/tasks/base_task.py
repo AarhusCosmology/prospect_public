@@ -46,15 +46,20 @@ class BaseTask(ABC):
             self.run(*args)
             toc = time.perf_counter()
             print(f"Finished task of type {self.type} and id {self.id} in {toc - tic:.3} seconds")
+            self.finalize()
             return self
         except Exception as e:
             self.success = False
             self.error = traceback.format_exc()
+            self.finalize()
             return self
 
     def __lt__(self, other):
         # Largest numerical value of priority is greatest
         return self.priority > other.priority
+
+    def finalize(self):
+        pass
 
     @property
     def type(self) -> str:

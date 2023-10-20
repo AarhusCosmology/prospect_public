@@ -1,0 +1,52 @@
+Status of job 'test'
+Jobtype: profile
+Started: 2023-08-07 13:03:30.316268
+Last updated: 2023-08-07 13:03:33.806041
+
+=== FAILED ==============================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== IN PROGRESS ==========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== QUEUED, READY =========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== QUEUED, NOT READY ====================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== DONE ================================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+1    -      InitialiseProfileTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+2    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+4    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+8    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+14   1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+7    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+13   1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+3    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+6    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+12   1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+11   1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+5    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+10   1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+9    1      InitialiseOptimiserTask 	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+15   2      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+18   14     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+26   10     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+27   9      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+28   15     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+17   8      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+25   5      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+29   27     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023      
+20   13     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023      
+30   17     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+24   11     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+16   4      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+23   12     OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+31   24     OptimiseTask         	 Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+21   3      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+32   23     OptimiseTask         	 Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+22   6      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+19   7      OptimiseTask         	 Mon Aug  7 13:03:30 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      
+33   21     OptimiseTask         	 Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023       Mon Aug  7 13:03:31 2023      

@@ -1,0 +1,54 @@
+io:
+  dir: output/debug_profile
+  jobname: test
+  overwrite_dir: 'yes'
+  snapshot_interval: 20.0
+  write: true
+kernel:
+  conf: ''
+  param: input/kernel_load_random_gauss.yaml
+  type: analytical
+profile:
+  chi2_tolerance: 0.01
+  confidence_levels:
+  - 0.68
+  - 0.95
+  detailed_plot: true
+  max_iterations: 20
+  minutes_per_iteration: null
+  optimiser: simulated annealing
+  parameter: x2
+  plot_Delta_chi2: false
+  plot_profile: true
+  plot_schedule: true
+  repetitions: 1
+  start_bin_fraction: 0.1
+  start_from_mcmc: input/profile/analytical_random_gauss/mcmc/test
+  step_size_range:
+  - 1
+  - 0.01
+  step_size_schedule: exponential
+  steps_per_iteration: 50
+  temperature_range:
+  - 0.1
+  - 0.001
+  temperature_schedule: exponential
+  values:
+  - -1.0
+  - -0.75
+  - -0.5
+  - -0.25
+  - 0.0
+  - 0.25
+  - 0.5
+  - 0.75
+  - 1.0
+  - 1.25
+  - 1.5
+  - 1.75
+  - 2.0
+run:
+  jobtype: profile
+  mode: serial
+  num_processes: 1
+  numpy_random_seed: null

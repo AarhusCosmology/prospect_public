@@ -5,7 +5,7 @@
     "version": "2.0.0",
     "configurations": [
         {
-            "name": "prospect serial debug",
+            "name": "serial debug",
             "type": "python",
             "request": "launch",
             "console": "integratedTerminal",
@@ -13,7 +13,7 @@
             "program": "${workspaceFolder}/test/debug.py"
         },
         {
-            "name": "prospect serial montepython",
+            "name": "serial montepython",
             "type": "python",
             "request": "launch",
             "console": "integratedTerminal",
@@ -21,7 +21,7 @@
             "program": "${workspaceFolder}/test/debug_montepython.py"
         },
         {
-            "name": "prospect resume debug",
+            "name": "resume debug",
             "type": "python",
             "request": "launch",
             "console": "integratedTerminal",
@@ -29,12 +29,52 @@
             "program": "${workspaceFolder}/test/debug_resume.py"
         },
         {
-            "name": "prospect profile debug",
+            "name": "profile debug",
             "type": "python",
             "request": "launch",
             "console": "integratedTerminal",
             "justMyCode": true,
             "program": "${workspaceFolder}/test/debug_profile.py"
+        },
+        {
+            "name": "analyse profile debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "program": "${workspaceFolder}/test/debug_analyse_profile.py"
+        },
+        {
+            "name": "analyse mcmc debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "program": "${workspaceFolder}/test/debug_analyse_mcmc.py"
+        },
+        {
+            "name": "cobaya mcmc debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "program": "${workspaceFolder}/test/debug_cobaya_mcmc.py"
+        },
+        {
+            "name": "cobaya profile debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "program": "${workspaceFolder}/test/debug_cobaya_profile.py"
+        },
+        {
+            "name": "reanneal debug",
+            "type": "python",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "program": "${workspaceFolder}/test/debug_reanneal.py"
         }
     ]
 }

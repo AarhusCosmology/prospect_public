@@ -23,8 +23,9 @@ mcmc:
      steps_per_iteration: 2000
      convergence_Rm1: 0.0001
      algorithm: 'MetropolisHastings'
-#     covmat: [[0.1, 0.0], 
+#     start_from_covmat: [[0.1, 0.0], 
 #              [0.0, 0.1]]
+#     start_from_position: [0.0, 0.0]
      temperature: 1.0
      unpack_at_dump: True
      analyse_automatically: False

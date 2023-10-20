@@ -12,9 +12,9 @@ class AnalyticalKernel(BaseKernel):
         self.config = yaml.full_load(open(os.path.join(os.getcwd(), config_kernel.param), 'r'))
 
         if self.config['function'] == 'gaussian':
-            self.loglkl = self.Gaussian
+            self._loglkl = self.Gaussian
         elif self.config['function'] == 'random_gaussian':
-            self.loglkl = self.Gaussian
+            self._loglkl = self.Gaussian
             self.set_parameter_dict = self.set_parameter_dict_random
 
             settings_file = os.path.join(output_folder, f'analytical/random_gauss.pkl')
@@ -53,6 +53,8 @@ class AnalyticalKernel(BaseKernel):
             raise ValueError('No analytical kernel with the desired function type.')
         self.dimension = self.config['dimension']
         self.scipy_profile = {}
+        self.config_kernel = config_kernel
+        self.output_folder = output_folder
     
     def Gaussian(self, position):
         residual = []
@@ -63,42 +65,52 @@ class AnalyticalKernel(BaseKernel):
         loglkl = 0.5*np.dot(residual, np.matmul(np.linalg.inv(self.config['covmat']), residual))
         return loglkl
     
-    def set_priors(self):
+    def set_parameter_dict(self):
         for param_name, prior in self.config['param_dict'].items():
-            # Priors are set before moving parameters to fixed
-            self.param['varying'][param_name]['prior'] = prior
+            self.param['varying'][param_name] = {'range': prior}
     
-    def loglkl(self, position):
-        raise NotImplementedError("Method 'loglkl' of AnalyticalKernel must be set on initialisation!")
+    def _loglkl(self, position):
+        raise NotImplementedError("Method '_loglkl' of AnalyticalKernel must be set on initialisation!")
+    
+    def logprior(self, position):
+        return self.log_uniform_prior(position)
 
-    def get_initial_position(self, config_initial_position):
-        raise KeyError('The analytical kernel does not currently take an initial position as argument.')
+    def get_initial_position(self, config_initial_position=None):
+        if config_initial_position is not None:
+            raise KeyError('The analytical kernel does not currently take an initial position as argument.')
+        else:
+            # Default
+            out = {param: [0.] for param in self.param['varying'].keys()}
+            for param_name, param_dict in self.param['fixed']:
+                out[param_name] = [param_dict['fixed_value']]
+            return out
 
     def get_default_initial_position(self):
         out = {param: [0.] for param in self.param['varying'].keys()}
         for param_name, param_dict in self.param['fixed']:
             out[param_name] = [param_dict['fixed_value']]
         return out
-    
-    def get_covmat(self, config_covmat):
-        return np.array(config_covmat)
-    
+
+    def read_initial_position(self, config_initial_position):
+        # Input should be formatted as something that can be cast to a numpy array 
+        return np.array(config_initial_position)
+
     def get_default_covmat(self):
         # Make a diagonal covmat with 1/20 of the prior widths as stds in each parameter
         stds = []
         for param_name, param in self.param['varying'].items():
-            stds.append(param['prior'][1] - param['prior'][0])
+            stds.append(param['range'][1] - param['range'][0])
         return 0.005*np.diag(stds)
+
+    def read_covmat(self, config_covmat):
+        # Input should be formatted as something that can be cast to a numpy array 
+        return np.array(config_covmat)
 
     def set_parameter_dict_random(self):
         # Overloads the set_parameter_dict from BaseKernel
-        self.param = {
-            'varying': {},
-            'fixed': {}
-        }
         for idx_dim in range(1,self.config['dimension']+1):
             self.param['varying'][f'x{idx_dim}'] = {
-                'prior': [-2.5, 2.5]
+                'range': [-2.5, 2.5]
             }
     
     def get_scipy_profile(self, parameter, fixed_val):

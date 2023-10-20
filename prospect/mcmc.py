@@ -2,11 +2,13 @@ from abc import ABC, abstractmethod
 from collections import defaultdict
 from dataclasses import dataclass
 import shutil
-from time import time
+from time import time, perf_counter
 from types import NoneType
 from typing import Any
 import numpy as np 
 from prospect.input import InputArgument
+
+import sys 
 
 def initialise_mcmc(config_mcmc, kernel, **mcmc_args):
     if config_mcmc.algorithm == 'MetropolisHastings':
@@ -105,16 +107,19 @@ class BaseMCMC(ABC):
         self.config_mcmc = config_mcmc
         self.kernel = kernel
 
-        if self.config_mcmc.covmat is not None:
-            self.covmat = self.kernel.get_covmat(self.config_mcmc.covmat)
+        if self.config_mcmc.start_from_covmat is not None:
+            if type(self.config_mcmc.start_from_covmat) != str:
+                self.covmat = self.config_mcmc.start_from_covmat
+            else:
+                self.covmat = self.kernel.read_covmat(self.config_mcmc.start_from_covmat)
         else:
             self.covmat = self.kernel.get_default_covmat()
 
         if 'chain' in mcmc_args:
             self.chain = mcmc_args['chain']
         else:
-            if self.config_mcmc.initial_position is not None:
-                initial_position = self.kernel.get_initial_position(self.config_mcmc.initial_position)
+            if self.config_mcmc.start_from_position is not None:
+                initial_position = self.kernel.read_initial_position(self.config_mcmc.start_from_position)
             else:
                 initial_position = self.kernel.get_default_initial_position()
             self.chain = Chain([1], [self.kernel.loglkl(initial_position)], initial_position)
@@ -124,34 +129,32 @@ class BaseMCMC(ABC):
         pass
 
     def run_steps(self, steps_per_iteration: int):
+        times = []
         for idx_step in range(steps_per_iteration):
+            time_ini = perf_counter()
             self.step()
+            time_final = perf_counter()
+            times.append(time_final - time_ini)
+        print(f"Finished running MCMC for {steps_per_iteration} steps. Average step time is {np.mean(times)} s.")
     
     def run_minutes(self, minutes: float):
         tic = time()
         seconds = minutes*60
         elapsed = 0
+        times = []
         while elapsed < seconds:
+            time_ini = perf_counter()
             self.step()
+            time_final = perf_counter()
+            times.append(time_final - time_ini)
             elapsed = time() - tic
+        print(f"Finished running MCMC for {minutes} minutes. Average step time is {np.mean(times)} s.")
     
     def finalize(self):
         # Delete montepython log folders
         # shutil.rmtree(self.kernel.mp_dir)
         # Make sure kernel is not dumped when saving
-        del self.kernel
-    
-    def assert_flat_prior(self, prop, acceptance):
-        for param_name, param_val in prop.items():
-            if param_name in self.kernel.param['varying']:
-                prior = self.kernel.param['varying'][param_name]['prior']
-                if prior[0] is not None:
-                    if param_val[0] < prior[0]:
-                        acceptance = 0
-                if prior[1] is not None:
-                    if param_val[0] > prior[1]:
-                        acceptance = 0
-        return acceptance
+        pass
 
 class MetropolisHastings(BaseMCMC):
     def __init__(self, config_mcmc, kernel, **mcmc_args):
@@ -159,11 +162,17 @@ class MetropolisHastings(BaseMCMC):
 
     def step(self):
         prop = self.get_proposal()
-        loglkl_prop = self.kernel.loglkl(prop)
-        # Assume uniform priors => acc. prob. is likelihood ratio 
-        alpha = np.exp((self.chain.loglkls[-1] - loglkl_prop)/self.config_mcmc.temperature) # Implicit minus sign on loglkl in our convention
-        acceptance = self.assert_flat_prior(prop, min(1, alpha))
-                
+        logprior_prop = self.kernel.logprior(prop)
+        if logprior_prop == np.inf:
+            acceptance = 0
+        else:
+            loglkl_prop = self.kernel.loglkl(prop)
+            # Assume uniform priors => acc. prob. is likelihood ratio
+            logpost_current = self.chain.loglkls[-1] + self.kernel.logprior(self.chain.last_position)
+            logpost_prop = loglkl_prop + logprior_prop
+            # Implicit minus sign on loglkl in our convention
+            acceptance = np.exp((logpost_current - logpost_prop)/self.config_mcmc.temperature) 
+
         rand = np.random.uniform(low=0, high=1)
         if acceptance > rand:
             self.chain.push_position(loglkl_prop, prop)
@@ -241,23 +250,23 @@ class Arguments:
             if not config['unpack_at_dump']:
                 raise ValueError("Must unpack MCMC in order to analyse; please set 'unpack_at_dump' to True.")
     
-    class covmat(InputArgument):
+    class start_from_covmat(InputArgument):
         # Specifies the parameter covmat 
         # Specific form depends on which kernel is being used
         # For analytical kernel: Nested lists of numbers defining the matrix
         # For MontePython: string pointing to a '.covmat' file
-        # For cobaya: TBA
+        # For cobaya: Don't enter!
         # Default value is extracted from the kernel
         val_type = str | list | np.ndarray | NoneType
         def get_default(self, config_yaml: dict[str, Any]):
             return None
     
-    class initial_position(InputArgument):
+    class start_from_position(InputArgument):
         # Point to start from
         # Specific form depends on which kernel is being used
         # For analytical kernel: List of numbers
         # For MontePython: string pointing to a '.bestfit' file
-        # For cobaya: TBA
+        # For cobaya: Don't enter!
         # Default value is extracted from the kernel
         val_type = str | list | np.ndarray | NoneType
         def get_default(self, config_yaml: dict[str, Any]):
@@ -272,5 +281,5 @@ class Arguments:
     temperature: temperature
     step_size: step_size
     analyse_automatically: analyse_automatically
-    covmat: covmat
-    initial_position: initial_position
+    start_from_covmat: start_from_covmat
+    start_from_position: start_from_position

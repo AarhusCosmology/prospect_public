@@ -15,6 +15,10 @@ from prospect.tasks.optimise_task import OptimiseTask
 # Switch matplotlib backend to one that doesn't pop up figures
 matplotlib.use('Agg')
 
+def argmax(iterable):
+    """From https://stackoverflow.com/questions/16945518/finding-the-index-of-the-value-which-is-the-min-or-max-in-python"""
+    return max(enumerate(iterable), key=lambda x: x[1])[0]
+
 class AnalyseProfileTask(BaseTask):
     priority = 75.0
 
@@ -49,21 +53,51 @@ class AnalyseProfileTask(BaseTask):
         if not os.path.isdir(self.dir):
             os.makedirs(self.dir)
         
-        bestfits = self.sort_tasks(optimise_tasks, initialise_tasks)
-        profile = self.compute_profile(bestfits)
-        self.write_results(bestfits, kernel)
+        self.bestfits = self.sort_tasks(optimise_tasks, initialise_tasks)
+        profile = self.compute_profile(self.bestfits)
+        self.write_results(self.bestfits, kernel)
+        self.write_profile_status(optimise_tasks, initialise_tasks)
 
         intervals = self.compute_intervals_neyman(profile)
         self.write_intervals(profile, intervals, kernel)
 
         if self.config.profile.plot_profile:
             tic = time.perf_counter()
-            self.plot_profile(profile, intervals, bestfits, kernel)
+            self.plot_profile(profile, intervals, self.bestfits, kernel)
             print(f"Plotted profile in {time.perf_counter() - tic:.5} s")
         if self.config.profile.plot_schedule:
             tic = time.perf_counter()
             self.plot_schedule(optimise_tasks)
             print(f"Plotted schedule in {time.perf_counter() - tic:.5} s")
+    
+    def write_profile_status(self, optimise_tasks, initialise_tasks):
+        status_file = os.path.join(self.dir, f'{self.config.profile.parameter}_status.txt')
+
+        print(f"Writing current profile status to {status_file}")
+        with open(status_file,"w") as file:
+            # Write header
+            file.write(f"{self.config.profile.parameter:14.10} ")
+            file.write(f"\t\t\t\t | rep. no.  current iter \t current loglkl \t best iter \t best loglkl \t converged? ")
+            
+            for fixed_val in self.config.profile.values:
+                file.write(f"\n{fixed_val:14.10} ")
+                for idx_rep in range(self.config.profile.repetitions):
+                    rep_tasks = [task for task in optimise_tasks if task.optimise_settings['fixed_param_val'] == fixed_val and task.optimise_settings['repetition_number'] == idx_rep]
+                    if rep_tasks:
+                        current_task = rep_tasks[argmax([task.optimise_settings['iteration_number'] for task in rep_tasks])]
+                        current_iter = current_task.optimiser.bestfit['iteration_number']
+                        current_loglkl = current_task.optimiser.bestfit['loglkl']
+
+                        best_task = rep_tasks[argmax([-task.optimiser.bestfit['loglkl'] for task in rep_tasks])]
+                        best_iter = best_task.optimiser.bestfit['iteration_number']
+                        best_loglkl = best_task.optimiser.bestfit['loglkl']
+                        pad_current = 13
+                        pad_best = 9
+                        write_string = f"| rep {idx_rep+1} \t {current_iter:<{pad_current}} \t {current_loglkl:.10e} \t {best_iter:<{pad_best}} \t {best_loglkl:.10e} \t {current_task.converged} "
+                        if idx_rep == 0:
+                            file.write(f"\t {write_string}")
+                        else:
+                            file.write(f"\n\t\t\t\t {write_string}")
 
     def emit_tasks(self) -> list[Type[BaseTask]]:
         # Never emit anything; the OptimiseTasks manage convergence themselves.
@@ -71,7 +105,6 @@ class AnalyseProfileTask(BaseTask):
     
     def sort_tasks(self, optimise_tasks, initialise_tasks):
         # Order the tasks
-        # WARNING: This might become slow after many tasks are accumulated!
         bestfits = {}
         for fixed_value in self.config.profile.values:
             bestfits[fixed_value] = {}
@@ -171,11 +204,11 @@ class AnalyseProfileTask(BaseTask):
             for fixed_val, bestfits_fixed_val in bestfit_dict.items():
                 bestfit = bestfits_fixed_val[bestfits_fixed_val['best_rep']]
                 if bestfit['loglkl'] == np.inf:
-                    file.write(f"{fixed_val:.5} \t --- no optimisations finished ---\n")
+                    file.write(f"{fixed_val:.10f} \t --- no optimisations finished ---\n")
                 else:
-                    file.write(f"{fixed_val:.5} \t {bestfit['Delta_chi2']} \t {bestfit['loglkl']:.5e} \t ")
-                    file.write(f"{bestfits_fixed_val['avg_loglkl']:.5e} \t {bestfits_fixed_val['initial_loglkl']:.5e} \t ")
-                    file.write(" \t ".join([str(np.round(bestfit[name], 5)) for name in param_names])+"\n")
+                    file.write(f"{fixed_val:.10f} \t {bestfit['Delta_chi2']:.10e} \t {bestfit['loglkl']:.10e} \t ")
+                    file.write(f"{bestfits_fixed_val['avg_loglkl']:.10e} \t {bestfits_fixed_val['initial_loglkl']:.10e} \t ")
+                    file.write(" \t ".join([str(np.round(bestfit['position'][name][0], 10)) for name in param_names])+"\n")
 
     def compute_intervals_neyman(self, profile):
         """
@@ -183,6 +216,7 @@ class AnalyseProfileTask(BaseTask):
 
         """
         intervals = {}
+
         def interp_onto(xdata, ydata, new_xdata, kind='linear'):
             return interp1d(xdata, ydata, fill_value="extrapolate", kind=kind)(new_xdata)
         param_cont = np.linspace(np.min(profile['param_vals']), np.max(profile['param_vals']), 10000)
@@ -191,13 +225,13 @@ class AnalyseProfileTask(BaseTask):
 
         for cl in self.config.profile.confidence_levels:
             chi2 = stats.chi2.ppf(cl, 1) 
-            lower_idx = np.argmin(np.abs(chi2_interped[0:idx_min] - chi2))
-            upper_idx = idx_min + np.argmin(np.abs(chi2_interped[idx_min:-1] - chi2))
-            intervals[cl] = [param_cont[lower_idx], param_cont[upper_idx]]
-
-            if lower_idx == 0 or upper_idx == len(param_cont):
-                # The interval bound is outside of the sampled region; cannot construct interval with the chosen sampling
-                intervals[cl] = None
+            intervals[cl] = [None, None]
+            if idx_min > 0:
+                lower_idx = np.argmin(np.abs(chi2_interped[0:idx_min] - chi2))
+                intervals[cl][0] = param_cont[lower_idx]
+            if idx_min < len(param_cont) - 1:
+                upper_idx = idx_min + np.argmin(np.abs(chi2_interped[idx_min:-1] - chi2))
+                intervals[cl][1] = param_cont[upper_idx]
         return intervals
     
     def write_intervals(self, profile, intervals, kernel) -> None:
@@ -206,9 +240,14 @@ class AnalyseProfileTask(BaseTask):
         with open(interval_file, "w") as file:
             file.write('C.L. \t C.I. \t bestfit (+dist. to upper bound)(-dist. to lower bound)\n')
             for cl, interval in intervals.items():
-                upper_dist = interval[1] - profile['global_best_param_val']
-                lower_dist = profile['global_best_param_val'] - interval[0]
-                file.write(f"{cl*100} %: \t {interval} \t {profile['global_best_param_val']} (+{upper_dist})(-{lower_dist}) \n")
+                file.write(f"{cl*100} %: \t {interval} \t {profile['global_best_param_val']}")
+                upper_dist, lower_dist = None, None
+                if interval[1] is not None:
+                    upper_dist = interval[1] - profile['global_best_param_val']
+                if interval[0] is not None:
+                    lower_dist = profile['global_best_param_val'] - interval[0]
+                file.write(f"(+{upper_dist})(-{lower_dist}) \n")
+                
 
     def plot_profile(self, profile, intervals, bestfit_dict, kernel) -> None:
         param_vals = profile['param_vals']
@@ -222,10 +261,9 @@ class AnalyseProfileTask(BaseTask):
             for idx, cl in enumerate(self.config.profile.confidence_levels):
                 chi2 = stats.chi2.ppf(cl, 1)
                 ax.plot(param_vals, chi2*np.ones(len(param_vals)), 'k', linestyle=self.fig['interval_styles'][idx], lw=0.5, label=f'{cl} C.L.')
-                interval = intervals[cl]
-                if interval is not None:
-                    ax.plot([interval[0], interval[0]], [ax.get_ylim()[0], chi2], 'k', linestyle=self.fig['interval_styles'][idx], lw=0.7)
-                    ax.plot([interval[1], interval[1]], [ax.get_ylim()[1], chi2], 'k', linestyle=self.fig['interval_styles'][idx], lw=0.7)
+                for bound in intervals[cl]:
+                    if bound is not None:
+                        ax.plot([bound, bound], [ax.get_ylim()[0], chi2], 'k', linestyle=self.fig['interval_styles'][idx], lw=0.7)
             ax.plot(param_vals, Delta_chi2, 'k.-', lw=0.9, label='current', zorder=2)
         else:
             ax.set_ylabel('-loglkl', fontsize=self.fig['fontsize'])
@@ -269,7 +307,7 @@ class AnalyseProfileTask(BaseTask):
                 else:
                     ax.plot(fixed_param_cont, scipy_profile, 'g--', lw=1.5, label='scipy')
         
-        ax.legend(fontsize=self.fig['fontsize']*0.8, ncol=2)
+        #ax.legend(fontsize=self.fig['fontsize']*0.8, ncol=2)
         fig.tight_layout()
         fig.savefig(os.path.join(self.dir, f'{self.config.profile.parameter}.pdf'))
         plt.close()
@@ -290,10 +328,16 @@ class AnalyseProfileTask(BaseTask):
             iter_data[task.optimise_settings['fixed_param_val']][task.optimise_settings['repetition_number']][task.optimise_settings['iteration_number']] = {
                 'acceptance_rate': task.optimiser.bestfit['acceptance_rate'],
                 'temperature': task.optimiser.settings['temperature'],
-                'step_size': task.optimiser.settings['step_size']
+                'step_size': task.optimiser.settings['step_size'],
+                'step_size_change': task.optimiser.settings['step_size_change'],
+                'loglkl': task.optimiser.bestfit['loglkl']
             }
+        plot_adaptive = self.config.profile.step_size_schedule == 'adaptive' and self.config.profile.step_size_adaptive_multiplier == 'adaptive'
 
-        fig, ax = plt.subplots(2, 1, figsize=(self.fig['width'], 1.8*self.fig['height']))
+        if plot_adaptive == 'adaptive':
+            fig, ax = plt.subplots(4, 1, figsize=(self.fig['width'], 3*self.fig['height']))
+        else:
+            fig, ax = plt.subplots(3, 1, figsize=(self.fig['width'], 2.5*self.fig['height']))
         current_longest = {'len': 0}
         for fixed_val in self.config.profile.values:
             # Actually: Consider plotting the average over reps!
@@ -303,30 +347,41 @@ class AnalyseProfileTask(BaseTask):
                         iterlist = list(iter_data[fixed_val][idx_rep].keys())
                         order = np.argsort(iterlist)
                         iterlist = np.array(iterlist)[order]
+                        loglkls = np.array([it['loglkl'] for it in iter_data[fixed_val][idx_rep].values()])[order]
                         acceptance_rates = np.array([it['acceptance_rate'] for it in iter_data[fixed_val][idx_rep].values()])[order]
-
-                        ax[0].plot(iterlist, acceptance_rates, '.-', alpha=0.8, ms=self.fig['rep_ms'][idx_rep], label=f"val={fixed_val}, rep {idx_rep}")
+                        step_sizes = np.array([it['step_size'] for it in iter_data[fixed_val][idx_rep].values()])[order]
+                        ax[0].plot(iterlist, loglkls, '.-', alpha=0.8, ms=self.fig['rep_ms'][idx_rep])
+                        ax[1].plot(iterlist, acceptance_rates, '.-', alpha=0.8, ms=self.fig['rep_ms'][idx_rep])
+                        ax[2].plot(iterlist, step_sizes, '.-')    
+                        if plot_adaptive == 'adaptive':
+                            multipliers = np.array([it['step_size_change']['current_multiplier'] for it in iter_data[fixed_val][idx_rep].values()])[order]
+                            ax[3].plot(iterlist, multipliers, '.-', alpha=0.8, ms=self.fig['rep_ms'][idx_rep])
                         if len(iterlist) > current_longest['len']:
                             current_longest = {
                                 'len': len(iterlist),
                                 'fixed_val': fixed_val,
                                 'idx_rep': idx_rep
                             }
-        
-        # Plot temperature of the run with most iterations
-        iterlist = list(iter_data[current_longest['fixed_val']][current_longest['idx_rep']].keys())
-        order = np.argsort(iterlist)
-        iterlist = np.array(iterlist)[order]
-        temperatures = np.array([it['temperature'] for it in iter_data[current_longest['fixed_val']][current_longest['idx_rep']].values()])[order]
-        step_sizes = np.array([it['step_size'] for it in iter_data[current_longest['fixed_val']][current_longest['idx_rep']].values()])[order]
-        ax[1].plot(iterlist, step_sizes/temperatures, 'k.-')
-        
-        ax[0].set(ylabel='acceptance rate', xticks=[], xlim=[-0.1, np.max(iterlist) + 0.1])
-        ax[1].set(xlabel='iteration', ylabel='step_size / temp', xlim=[-0.1, np.max(iterlist) + 0.1])
+        iterlim = [-0.1, current_longest['len'] + 0.1]
+        ax[0].set(ylabel='-loglkl', xlim=iterlim, xticks=[], yscale='log')
+        ax[1].set(ylabel='acceptance rate', xlim=iterlim, xticks=[])
+        ax[2].set(ylabel='step size & temp', xlim=iterlim, xticks=[], yscale='log')
+        if plot_adaptive:
+            ax[3].set(xlabel='iteration', ylabel='step multiplier', xlim=iterlim)
+        if current_longest['len'] > 0:
+            # Plot temperature of the run with most iterations
+            iterlist = list(iter_data[current_longest['fixed_val']][current_longest['idx_rep']].keys())
+            order = np.argsort(iterlist)
+            iterlist = np.array(iterlist)[order]
+            temperatures = np.array([it['temperature'] for it in iter_data[current_longest['fixed_val']][current_longest['idx_rep']].values()])[order]
+            ax[2].plot(iterlist, temperatures, 'r.-', label='T')    
+            handles, labels = ax[0].get_legend_handles_labels()
+            if handles and labels:
+                labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
+                ax[0].legend(handles, labels, fontsize=0.5*self.fig['fontsize'])
+            ax[0].legend(handles, labels, fontsize=0.5*self.fig['fontsize'])
+            ax[2].legend()
 
-        handles, labels = ax[0].get_legend_handles_labels()
-        labels, handles = zip(*sorted(zip(labels, handles), key=lambda t: t[0]))
-        ax[0].legend(handles, labels, fontsize=0.5*self.fig['fontsize'])
         fig.tight_layout()
         fig.savefig(os.path.join(self.dir, f'{self.config.profile.parameter}_schedule.pdf'))
         plt.close()

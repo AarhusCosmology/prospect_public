@@ -1,0 +1,5 @@
+test/debug_analyse_mcmc/mcmc/test_2.txt
+test/debug_analyse_mcmc/mcmc/test_3.txt
+test/debug_analyse_mcmc/mcmc/test_1.txt
+test/debug_analyse_mcmc/mcmc/test_0.txt
+Removed no burn in

@@ -21,7 +21,9 @@ class MCMCTask(BaseTask):
             self.mcmc.run_steps(self.config.mcmc.steps_per_iteration)
         elif self.config.mcmc.minutes_per_iteration is not None:
             self.mcmc.run_minutes(self.config.mcmc.minutes_per_iteration)
-        self.mcmc.finalize()
+    
+    def finalize(self):
+        del self.mcmc.kernel
 
 class AnalyseMCMCTask(BaseTask):
     priority = 75.0
@@ -60,8 +62,8 @@ class AnalyseMCMCTask(BaseTask):
 
 def initialise_mcmc_tasks(config: Configuration, mcmc_id: int) -> list[Type[BaseTask]]:
     task_list = []
-    mcmc_args = {'mcmc_id': mcmc_id}
     for idx_chain in range(config.mcmc.N_chains):
+            mcmc_args = {'mcmc_id': mcmc_id, 'chain_id': idx_chain}
             task_list.append(MCMCTask(config, **mcmc_args))
     task_list.append(AnalyseMCMCTask(config, [task.id for task in task_list]))
     return task_list
@@ -71,6 +73,7 @@ def continue_mcmc_tasks(config: Configuration, mcmc_tasks: list[MCMCTask]) -> li
     for mcmc_task in mcmc_tasks:
         mcmc_args = {
             'mcmc_id': mcmc_task.mcmc_args['mcmc_id'],
+            'chain_id': mcmc_task.mcmc_args['chain_id'],
             'chain': mcmc_task.mcmc.chain
         }
         task_list.append(MCMCTask(config, **mcmc_args))

@@ -1,0 +1,44 @@
+Status of job 'test'
+Jobtype: mcmc
+Started: 2023-08-07 13:20:50.265196
+Last updated: 2023-08-07 13:21:00.616743
+
+=== FAILED ==============================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== IN PROGRESS ==========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== QUEUED, READY =========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+24   20     MCMCTask             	 Mon Aug  7 13:20:59 2023      
+
+=== QUEUED, NOT READY ====================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+25   20     AnalyseMCMCTask      	 Mon Aug  7 13:20:59 2023      
+
+=== DONE ================================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+1    -      MCMCTask             	 Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:50 2023      
+3    -      MCMCTask             	 Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:51 2023      
+2    -      MCMCTask             	 Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:51 2023       Mon Aug  7 13:20:51 2023      
+4    -      MCMCTask             	 Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:51 2023       Mon Aug  7 13:20:52 2023      
+5    -      AnalyseMCMCTask      	 Mon Aug  7 13:20:50 2023       Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:52 2023      
+6    5      MCMCTask             	 Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:53 2023      
+8    5      MCMCTask             	 Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:53 2023       Mon Aug  7 13:20:53 2023      
+7    5      MCMCTask             	 Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:53 2023       Mon Aug  7 13:20:54 2023      
+9    5      MCMCTask             	 Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:54 2023       Mon Aug  7 13:20:54 2023      
+10   5      AnalyseMCMCTask      	 Mon Aug  7 13:20:52 2023       Mon Aug  7 13:20:54 2023       Mon Aug  7 13:20:55 2023      
+11   10     MCMCTask             	 Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:55 2023      
+13   10     MCMCTask             	 Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:56 2023      
+12   10     MCMCTask             	 Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:56 2023       Mon Aug  7 13:20:56 2023      
+14   10     MCMCTask             	 Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:56 2023       Mon Aug  7 13:20:57 2023      
+15   10     AnalyseMCMCTask      	 Mon Aug  7 13:20:55 2023       Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:57 2023      
+16   15     MCMCTask             	 Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:57 2023      
+18   15     MCMCTask             	 Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:58 2023      
+17   15     MCMCTask             	 Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:58 2023       Mon Aug  7 13:20:58 2023      
+19   15     MCMCTask             	 Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:58 2023       Mon Aug  7 13:20:59 2023      
+20   15     AnalyseMCMCTask      	 Mon Aug  7 13:20:57 2023       Mon Aug  7 13:20:59 2023       Mon Aug  7 13:20:59 2023      
+21   20     MCMCTask             	 Mon Aug  7 13:20:59 2023       Mon Aug  7 13:20:59 2023       Mon Aug  7 13:20:59 2023      
+23   20     MCMCTask             	 Mon Aug  7 13:20:59 2023       Mon Aug  7 13:20:59 2023       Mon Aug  7 13:21:00 2023      
+22   20     MCMCTask             	 Mon Aug  7 13:20:59 2023       Mon Aug  7 13:21:00 2023       Mon Aug  7 13:21:00 2023      

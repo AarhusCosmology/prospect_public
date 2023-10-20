@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 import os
 from abc import ABC
@@ -5,6 +6,7 @@ from dataclasses import dataclass, field
 from importlib import import_module
 from types import UnionType
 from typing import Any, get_args, get_origin, Union
+import numpy as np 
 
 class Configuration:
     def __init__(self, config_yaml):
@@ -25,6 +27,13 @@ class Configuration:
                 raise ValueError("The given value of 'jobtype' is not recognised. Choose either 'mcmc' or 'profile'.")
         else:
             raise ValueError("You must give 'jobtype' as an input under the 'run' category.")
+
+        str_eval_arguments = [('profile', 'values')]
+        for arg_module, arg_name in str_eval_arguments:
+            if arg_module in config_yaml:
+                if arg_name in config_yaml[arg_module]:
+                    if type(config_yaml[arg_module][arg_name]) == str:
+                        config_yaml[arg_module][arg_name] = safe_eval(config_yaml[arg_module][arg_name])
 
         self.set_defaults_iterative(modules, config_yaml)
         self.validate_parameters(modules, config_yaml)
@@ -95,10 +104,7 @@ class Configuration:
 
     def set_output_dir(self, config_io) -> None:
         # Sets output dir depending on whether to overwrite
-        if config_io['resume']:
-            # config_io['dir'] was set in read_config
-            pass
-        elif config_io['write']:
+        if config_io['write']:
             if not config_io['overwrite_dir']:
                 if os.path.isdir(config_io['dir']):
                     output_idx = 0
@@ -108,6 +114,23 @@ class Configuration:
                         else:
                             break
                     config_io['dir'] = f"{config_io['dir']}_{output_idx}"
+
+def safe_eval(code):
+    @contextlib.contextmanager
+    def disable_imports():
+        import builtins
+        __import__ = builtins.__import__
+        builtins.__import__ = None
+        try:
+            yield
+        finally:
+            builtins.__import__ = __import__
+    scope = {'np': np, 'numpy': np}
+    with disable_imports():
+        try:
+            return eval(code, scope)
+        except Exception:
+            raise ValueError(f'Illegal input {code!r}. Note that you may only use the standard and numpy library in Python-evaluted statements in the .yaml file.')
 
 @dataclass
 class InputArgument(ABC):

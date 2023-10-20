@@ -1,0 +1,105 @@
+Status of job 'test'
+Jobtype: profile
+Started: 2023-09-21 10:15:51.012814
+Last updated: 2023-09-21 10:16:36.950963
+
+=== FAILED ==============================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== IN PROGRESS ==========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== QUEUED, READY =========================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+86   -      AnalyseProfileTask   	 Thu Sep 21 10:16:35 2023      
+82   78     OptimiseTask         	 Thu Sep 21 10:16:33 2023      
+83   79     OptimiseTask         	 Thu Sep 21 10:16:34 2023      
+22   6      OptimiseTask         	 Thu Sep 21 10:15:51 2023      
+67   20     OptimiseTask         	 Thu Sep 21 10:16:21 2023      
+55   51     OptimiseTask         	 Thu Sep 21 10:16:11 2023      
+84   80     OptimiseTask         	 Thu Sep 21 10:16:34 2023      
+23   12     OptimiseTask         	 Thu Sep 21 10:15:51 2023      
+24   11     OptimiseTask         	 Thu Sep 21 10:15:51 2023      
+85   81     OptimiseTask         	 Thu Sep 21 10:16:35 2023      
+19   7      OptimiseTask         	 Thu Sep 21 10:15:51 2023      
+
+=== QUEUED, NOT READY ====================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+
+=== DONE ================================================
+id   from   task type            	 Time when emitted              Time when started              Time when finished            
+1    -      InitialiseProfileTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+2    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+4    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+8    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+14   1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+7    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+13   1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+3    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+6    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+12   1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+11   1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+5    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+10   1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+9    1      InitialiseOptimiserTask 	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+15   2      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023      
+18   14     OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:52 2023      
+26   10     OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:52 2023       Thu Sep 21 10:15:53 2023      
+27   9      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:53 2023       Thu Sep 21 10:15:53 2023      
+28   15     OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:15:53 2023       Thu Sep 21 10:15:54 2023      
+29   18     OptimiseTask         	 Thu Sep 21 10:15:52 2023       Thu Sep 21 10:15:54 2023       Thu Sep 21 10:15:54 2023      
+30   26     OptimiseTask         	 Thu Sep 21 10:15:53 2023       Thu Sep 21 10:15:54 2023       Thu Sep 21 10:15:55 2023      
+31   27     OptimiseTask         	 Thu Sep 21 10:15:53 2023       Thu Sep 21 10:15:55 2023       Thu Sep 21 10:15:56 2023      
+32   28     OptimiseTask         	 Thu Sep 21 10:15:54 2023       Thu Sep 21 10:15:56 2023       Thu Sep 21 10:15:56 2023      
+33   29     OptimiseTask         	 Thu Sep 21 10:15:54 2023       Thu Sep 21 10:15:56 2023       Thu Sep 21 10:15:57 2023      
+34   30     OptimiseTask         	 Thu Sep 21 10:15:55 2023       Thu Sep 21 10:15:57 2023       Thu Sep 21 10:15:57 2023      
+35   31     OptimiseTask         	 Thu Sep 21 10:15:56 2023       Thu Sep 21 10:15:57 2023       Thu Sep 21 10:15:58 2023      
+36   32     OptimiseTask         	 Thu Sep 21 10:15:56 2023       Thu Sep 21 10:15:58 2023       Thu Sep 21 10:15:59 2023      
+37   33     OptimiseTask         	 Thu Sep 21 10:15:57 2023       Thu Sep 21 10:15:59 2023       Thu Sep 21 10:15:59 2023      
+38   34     OptimiseTask         	 Thu Sep 21 10:15:57 2023       Thu Sep 21 10:15:59 2023       Thu Sep 21 10:16:00 2023      
+39   35     OptimiseTask         	 Thu Sep 21 10:15:58 2023       Thu Sep 21 10:16:00 2023       Thu Sep 21 10:16:00 2023      
+40   36     OptimiseTask         	 Thu Sep 21 10:15:59 2023       Thu Sep 21 10:16:00 2023       Thu Sep 21 10:16:01 2023      
+44   -      AnalyseProfileTask   	 Thu Sep 21 10:16:01 2023       Thu Sep 21 10:16:01 2023       Thu Sep 21 10:16:04 2023      
+41   37     OptimiseTask         	 Thu Sep 21 10:15:59 2023       Thu Sep 21 10:16:04 2023       Thu Sep 21 10:16:05 2023      
+17   8      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:16:05 2023       Thu Sep 21 10:16:05 2023      
+16   4      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:16:05 2023       Thu Sep 21 10:16:06 2023      
+43   40     OptimiseTask         	 Thu Sep 21 10:16:01 2023       Thu Sep 21 10:16:06 2023       Thu Sep 21 10:16:06 2023      
+45   41     OptimiseTask         	 Thu Sep 21 10:16:05 2023       Thu Sep 21 10:16:06 2023       Thu Sep 21 10:16:07 2023      
+46   17     OptimiseTask         	 Thu Sep 21 10:16:05 2023       Thu Sep 21 10:16:07 2023       Thu Sep 21 10:16:08 2023      
+47   16     OptimiseTask         	 Thu Sep 21 10:16:06 2023       Thu Sep 21 10:16:08 2023       Thu Sep 21 10:16:08 2023      
+48   43     OptimiseTask         	 Thu Sep 21 10:16:06 2023       Thu Sep 21 10:16:08 2023       Thu Sep 21 10:16:09 2023      
+49   45     OptimiseTask         	 Thu Sep 21 10:16:07 2023       Thu Sep 21 10:16:09 2023       Thu Sep 21 10:16:09 2023      
+50   46     OptimiseTask         	 Thu Sep 21 10:16:08 2023       Thu Sep 21 10:16:09 2023       Thu Sep 21 10:16:10 2023      
+51   47     OptimiseTask         	 Thu Sep 21 10:16:08 2023       Thu Sep 21 10:16:10 2023       Thu Sep 21 10:16:11 2023      
+52   48     OptimiseTask         	 Thu Sep 21 10:16:09 2023       Thu Sep 21 10:16:11 2023       Thu Sep 21 10:16:11 2023      
+53   49     OptimiseTask         	 Thu Sep 21 10:16:09 2023       Thu Sep 21 10:16:11 2023       Thu Sep 21 10:16:12 2023      
+58   -      AnalyseProfileTask   	 Thu Sep 21 10:16:12 2023       Thu Sep 21 10:16:13 2023       Thu Sep 21 10:16:15 2023      
+54   50     OptimiseTask         	 Thu Sep 21 10:16:10 2023       Thu Sep 21 10:16:15 2023       Thu Sep 21 10:16:15 2023      
+56   52     OptimiseTask         	 Thu Sep 21 10:16:11 2023       Thu Sep 21 10:16:15 2023       Thu Sep 21 10:16:16 2023      
+42   38     OptimiseTask         	 Thu Sep 21 10:16:00 2023       Thu Sep 21 10:16:16 2023       Thu Sep 21 10:16:17 2023      
+57   53     OptimiseTask         	 Thu Sep 21 10:16:12 2023       Thu Sep 21 10:16:17 2023       Thu Sep 21 10:16:17 2023      
+59   54     OptimiseTask         	 Thu Sep 21 10:16:15 2023       Thu Sep 21 10:16:17 2023       Thu Sep 21 10:16:18 2023      
+60   56     OptimiseTask         	 Thu Sep 21 10:16:16 2023       Thu Sep 21 10:16:18 2023       Thu Sep 21 10:16:18 2023      
+61   42     OptimiseTask         	 Thu Sep 21 10:16:17 2023       Thu Sep 21 10:16:18 2023       Thu Sep 21 10:16:19 2023      
+62   57     OptimiseTask         	 Thu Sep 21 10:16:17 2023       Thu Sep 21 10:16:19 2023       Thu Sep 21 10:16:20 2023      
+25   5      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:16:20 2023       Thu Sep 21 10:16:20 2023      
+63   60     OptimiseTask         	 Thu Sep 21 10:16:18 2023       Thu Sep 21 10:16:20 2023       Thu Sep 21 10:16:21 2023      
+20   13     OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:16:21 2023       Thu Sep 21 10:16:21 2023      
+64   62     OptimiseTask         	 Thu Sep 21 10:16:20 2023       Thu Sep 21 10:16:21 2023       Thu Sep 21 10:16:22 2023      
+65   25     OptimiseTask         	 Thu Sep 21 10:16:20 2023       Thu Sep 21 10:16:22 2023       Thu Sep 21 10:16:23 2023      
+66   63     OptimiseTask         	 Thu Sep 21 10:16:21 2023       Thu Sep 21 10:16:23 2023       Thu Sep 21 10:16:23 2023      
+71   -      AnalyseProfileTask   	 Thu Sep 21 10:16:23 2023       Thu Sep 21 10:16:24 2023       Thu Sep 21 10:16:26 2023      
+68   64     OptimiseTask         	 Thu Sep 21 10:16:22 2023       Thu Sep 21 10:16:26 2023       Thu Sep 21 10:16:27 2023      
+69   65     OptimiseTask         	 Thu Sep 21 10:16:23 2023       Thu Sep 21 10:16:27 2023       Thu Sep 21 10:16:28 2023      
+21   3      OptimiseTask         	 Thu Sep 21 10:15:51 2023       Thu Sep 21 10:16:28 2023       Thu Sep 21 10:16:28 2023      
+70   66     OptimiseTask         	 Thu Sep 21 10:16:23 2023       Thu Sep 21 10:16:28 2023       Thu Sep 21 10:16:29 2023      
+72   68     OptimiseTask         	 Thu Sep 21 10:16:27 2023       Thu Sep 21 10:16:29 2023       Thu Sep 21 10:16:29 2023      
+73   69     OptimiseTask         	 Thu Sep 21 10:16:28 2023       Thu Sep 21 10:16:29 2023       Thu Sep 21 10:16:30 2023      
+74   21     OptimiseTask         	 Thu Sep 21 10:16:28 2023       Thu Sep 21 10:16:30 2023       Thu Sep 21 10:16:31 2023      
+75   70     OptimiseTask         	 Thu Sep 21 10:16:29 2023       Thu Sep 21 10:16:31 2023       Thu Sep 21 10:16:31 2023      
+76   72     OptimiseTask         	 Thu Sep 21 10:16:29 2023       Thu Sep 21 10:16:31 2023       Thu Sep 21 10:16:32 2023      
+77   73     OptimiseTask         	 Thu Sep 21 10:16:30 2023       Thu Sep 21 10:16:32 2023       Thu Sep 21 10:16:32 2023      
+78   74     OptimiseTask         	 Thu Sep 21 10:16:31 2023       Thu Sep 21 10:16:32 2023       Thu Sep 21 10:16:33 2023      
+79   75     OptimiseTask         	 Thu Sep 21 10:16:31 2023       Thu Sep 21 10:16:33 2023       Thu Sep 21 10:16:34 2023      
+80   76     OptimiseTask         	 Thu Sep 21 10:16:32 2023       Thu Sep 21 10:16:34 2023       Thu Sep 21 10:16:34 2023      
+81   77     OptimiseTask         	 Thu Sep 21 10:16:32 2023       Thu Sep 21 10:16:34 2023       Thu Sep 21 10:16:35 2023      

@@ -7,6 +7,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Type
 from dataclasses import dataclass
+from prospect.input import Configuration
 from prospect.tasks.base_task import BaseTask
 from prospect.tasks.analyse_profile_task import AnalyseProfileTask
 from prospect.tasks.initialise import initialise_tasks
@@ -23,26 +24,26 @@ class TasksState:
     dependencies: defaultdict[int, list[int]]
 
 class Scheduler:
-    def __init__(self, config: dict, state: TasksState = None) -> None:
-        self.config = config
-        self.start_time = time.time()
-        self.start_date = datetime.now()
-        self.next_dump_time = time.time() + config.io.snapshot_interval
-        self.sleep_iteration = 0
+    def __init__(self, config: Configuration, state: TasksState = None) -> None:
         if state:
             # Resume from snapshot
             self.tasks = state
             # Required to restart all tasks that were ongoing
-            for id, task in self.tasks.ongoing:
+            for task in self.tasks.ongoing.values():
                 self.push_task(task)
-                del self.tasks.ongoing[id]
+            self.tasks.ongoing = {}
         else:
             # Start from config file
             self.tasks = TasksState([], {}, {}, {}, {}, defaultdict(list))
-            new_tasks = initialise_tasks(self.config)
+            new_tasks = initialise_tasks(config)
             for task in new_tasks:
                 self.push_task(task)
+        self.config = config
         self.condition = Condition()
+        self.start_time = time.time()
+        self.start_date = datetime.now()
+        self.next_dump_time = time.time() + config.io.snapshot_interval
+        self.sleep_iteration = 0
 
     def delegate(self, executor) -> None:
         # Executor is a context managed instance of either mpi4py.futures.MPICommExecutor 
@@ -142,8 +143,9 @@ class Scheduler:
         if self.config.io.write:
             if time.time() > self.next_dump_time:
                 if self.config.run.jobtype == 'profile' and finished_task.type != 'AnalyseProfileTask':
-                    # Bad: Don't just give all OptimiseTasks!
-                    self.push_task(self.get_profile_analysis())
+                    if 'AnalyseProfileTask' not in [queued_task.type for queued_task in self.tasks.queued]:
+                        if 'AnalyseProfileTask' not in [ongoing_task.type for ongoing_task in self.tasks.ongoing.values()]:
+                            self.push_task(self.get_profile_analysis())
                 self.dump_snapshot()
                 self.status_update()
 
@@ -151,8 +153,12 @@ class Scheduler:
     
     def dump_snapshot(self) -> None:
         print("Dumping snapshot...")
-        with open(os.path.join(self.config.io.dir, "state.pkl"), 'wb') as state_file:
-            pickle.dump(self.tasks, state_file)
+        for name, data in [("config", self.config), ("state", self.tasks)]:
+            backup_filename = os.path.join(self.config.io.dir, f"{name}_backup.pkl")
+            with open(backup_filename, 'wb') as file:
+                # Write to backup to minimize risk of crash while saving
+                pickle.dump(data, file) 
+                os.system(f'mv {backup_filename} {os.path.join(self.config.io.dir, f"{name}.pkl")}')
 
     def status_update(self) -> None:
         """Writes status of all tasks in status.txt"""

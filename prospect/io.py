@@ -8,11 +8,12 @@ from typing import Any
 from prospect.input import InputArgument
 from prospect.tasks.base_task import BaseTask
 
-def read_config(arg: str) -> dict[str, Any]:
+def read_user_input(arg: str) -> dict[str, Any]:
     if os.path.isfile(arg):
+        resume = False
         config = yaml.full_load(open(arg, 'r'))
-        config['io']['resume'] = False
     elif os.path.isdir(arg):
+        resume = True
         # arg is folder, get the .yaml stored inside
         config = yaml.full_load(open(f"{arg}/log.yaml", 'r'))
         # Force the output directory to be the user input
@@ -21,38 +22,53 @@ def read_config(arg: str) -> dict[str, Any]:
                 print(f"The command line directory supplied is different from the output directory in the log.yaml file.")
                 print(f"Changing the output directory to the command line directory.")
                 config['io']['dir'] = arg
-                config['io']['resume'] = True
     else:
         raise ValueError('Invalid arguments to PROSPECT. Give either a .yaml input file or the folder of a previous PROSPECT run.')
-    return config
+    return config, resume
 
-def prepare_run(arg: str, config):
-    if not config.io.resume:
-        BaseTask.idx_count = 1
-        if config.io.write:
-            if os.path.isdir(config.io.dir):
-                if config.io.overwrite_dir:
-                    shutil.rmtree(config.io.dir)
-            os.makedirs(config.io.dir, exist_ok=False)
-            print(f"Saving potentially modified config to {config.io.dir}/log.yaml")
-            with open(os.path.join(config.io.dir, "log.yaml"), 'w') as outfile:
-                yaml.dump(config.config_dict, outfile)
-            print(f"Starting PROSPECT from input file {arg}.")
+def load_config(arg: str):
+    # arg is folder, restart from that folder
+    if not os.path.isfile(f"{arg}/config.pkl"):
+        raise ValueError(f'Could not find {arg}/config.pkl.')
+    else:
+        with open(f"{arg}/config.pkl", "rb") as config_file:
+            config = pickle.load(config_file)
+        return config
+
+def load_state(arg: str):
+    # arg is folder, restart from that folder
+    if not os.path.isfile(f"{arg}/state.pkl"):
+        raise ValueError('No state.pkl found in your argument folder. Please provide either a folder with a PROSPECT state.pkl dump or an input.yaml file.')
+    else:
+        with open(f"{arg}/state.pkl", "rb") as state_file:
+            state = pickle.load(state_file)
+        max_id = max(set().union(*[state.ongoing, [task.id for task in state.queued], state.unready, state.done]))
+        BaseTask.idx_count = max_id + 1
+        return state
+
+def prepare_run(config):
+    BaseTask.idx_count = 1
+    if config.io.write:
+        # Setup job directory
+        if os.path.isdir(config.io.dir):
+            if config.io.overwrite_dir:
+                shutil.rmtree(config.io.dir)
+        os.makedirs(config.io.dir, exist_ok=False)
+        # Create kernel directory
         os.makedirs(os.path.join(config.io.dir, config.run.jobtype))
         if config.kernel.type in ['montepython', 'cobaya', 'analytical']:
             os.makedirs(os.path.join(config.io.dir, config.kernel.type))
-        return False # No state to resume from
-    elif config.io.resume:
-        # arg is folder, restart from that folder
-        if not os.path.isfile(f"{arg}/state.pkl"):
-            raise ValueError('No state.pkl found in your argument folder. Please provide either a folder with a PROSPECT state.pkl dump or an input.yaml file.')
-        else:
-            with open(f"{arg}/state.pkl", "rb") as state_file:
-                state = pickle.load(state_file)
-            max_id = max(set().union(*[state.ongoing, [task.id for task in state.queued], state.unready, state.done]))
-            BaseTask.idx_count = max_id + 1
-            print(f"Resuming PROSPECT snapshop in {arg}.")
-        return state
+            # If MP: Save MP stuff
+            # If cobaya: Save cobaya stuff
+        # Save log.yaml
+        print(f"Saving potentially modified config to {config.io.dir}/log.yaml")
+        for module_name, module in config.config_dict.items():
+            for param_name, param_value in module.items():
+                # yaml cannot save numpy arrays, so convert them to lists before storing
+                if isinstance(param_value, np.ndarray):
+                    config.config_dict[module_name][param_name] = param_value.tolist()
+        with open(os.path.join(config.io.dir, "log.yaml"), 'w') as outfile:
+            yaml.dump(config.config_dict, outfile)
 
 def unpack_mcmc(param_dict, output_dir, jobname, *chain_list) -> None:
     """Unpacks the PROSPECT state into a usual cobaya-like MCMC folder."""
@@ -98,7 +114,7 @@ def write_parameters(param_dict, output_dir, jobname, latex_names=None) -> None:
     with open(f"{output_dir}/{jobname}.ranges", 'w') as file:
         for name, param_item in param_dict.items():
             write_str = f"\n{name}"
-            for bound in param_item['prior']:
+            for bound in param_item['range']:
                 if bound is None:
                     write_str += " N"
                 else:
@@ -143,18 +159,15 @@ class Arguments:
     
     class snapshot_interval(InputArgument):
         val_type = float
-        default = 0.1 # Dumps snapshot whenever task finishes
+        # Dumps snapshot whenever task finishes
+        def get_default(self, config_yaml: dict[str, Any]):
+            return 1.0
         def validate(self, config):
             # Check that write = True
             pass
-    
-    class resume(InputArgument):
-        # Whether the current run is the resume of a previous run
-        val_type = bool
     
     jobname: jobname
     write: write
     dir: dir
     overwrite_dir: overwrite_dir
     snapshot_interval: snapshot_interval
-    resume: resume
