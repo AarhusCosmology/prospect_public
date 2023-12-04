@@ -1,0 +1,31 @@
+[build-system]
+requires = ['setuptools', 'numpy>=1.17.0', 'scipy>=1.5', 'PyYAML>=5.1', 'GetDist>=1.3.1']
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prospect-public"
+version = "23.0.1"
+requires-python = ">3.10.0"
+authors = [
+  { name="Emil Brinch Holm", email="ebholm@phys.au.dk"},
+  { name="Thomas Tram", email="thomas.tram@phys.au.dk"},
+]
+description = "A profile likelihood code for frequentist cosmological parameter inference"
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/AarhusCosmology/prospect_public"
+"Bug Tracker" = "https://github.com/AarhusCosmology/prospect_public/issues"
+
+[project.scripts]
+prospect = "prospect.run:run_from_shell"
+prospect-analyse = "prospect.run:analyse_from_shell"
+prospect-reanneal = "prospect.profile:reanneal_from_shell"
+
+[tool.setuptools.packages.find]
+exclude = ["input", "test"]
