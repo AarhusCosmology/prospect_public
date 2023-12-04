@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "prospect-public"
 version = "23.0.0"
-requires-python = ">3.10"
+requires-python = ">3.10.0"
 authors = [
   { name="Emil Brinch Holm", email="ebholm@phys.au.dk"},
   { name="Thomas Tram", email="thomas.tram@phys.au.dk"},
@@ -28,8 +28,4 @@ prospect-analyse = "prospect.run:analyse_from_shell"
 prospect-reanneal = "prospect.profile:reanneal_from_shell"
 
 [tool.setuptools.packages.find]
-where = ["."]  # list of folders that contain the packages (["."] by default)
-include = ["prospect*"]  # package names should match these glob patterns (["*"] by default)
-exclude = ["input*", "test*"]  # exclude packages matching these glob patterns (empty by default)
-namespaces = false  # to disable scanning PEP 420 namespaces (true by default)
-
+exclude = ["input", "test"]
