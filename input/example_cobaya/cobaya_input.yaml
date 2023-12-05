@@ -1,0 +1,33 @@
+likelihood:
+   sh0es:
+     external: 'lambda _self: -0.5 * (_self.provider.get_param("h") - 73.04)**2 / (1.04)**2'
+     requires: ["h"]
+
+params:
+  h:
+    prior:
+      min: 0.65
+      max: 0.80
+    ref:
+      dist: norm
+      loc: 0.73
+      scale: 0.01
+    proposal: 0.73
+    latex: h
+  omega_cdm:
+    prior:
+      min: 0.07
+      max: 0.16
+    ref:
+      dist: norm
+      loc: 0.12
+      scale: 0.005
+    proposal: 0.12
+    latex: \omega_\mathrm{cdm}
+
+theory:
+  classy:
+
+# Does not matter when running PROSPECT
+sampler:
+  mcmc:

@@ -1,0 +1,66 @@
+io:
+     jobname: 'example_montepython'
+     write: True
+     # relative to directory prospect is called from
+     dir: 'output/example_montepython'
+     overwrite_dir: False
+     snapshot_interval: 60.0
+
+run:
+     jobtype: 'profile'
+     mode: 'serial'
+
+kernel:
+     type: 'montepython'
+     param: 'input/example_montepython/example.param'
+     conf: 'input/example_montepython/example.conf'
+
+profile:
+    # Choose parameter to profile
+    # If MontePython: Must be a varied 'cosmo' parameter
+    # If cobaya: Must be a sampled parameter
+    parameter: 'h'
+    # Points to evaluate profile at
+    # Python expressions allowed as strings
+    values: 'np.linspace(0.71, 0.75, 10)'
+
+    optimiser: 'simulated annealing'
+
+    # Temperature changes from the endpoints of the range in 
+    # the amount of iterations given by 'max_iterations'
+    temperature_schedule: 'exponential'
+    temperature_range: [0.1, 0.001]
+    max_iterations: 20
+
+    # Either 'adaptive' or 'exponential'
+    # Adaptive adjusts step size at each iteration to lie in the interval chosen
+    step_size_schedule: 'adaptive'
+    step_size_adaptive_interval: [0.19, 0.21]
+    # Amplitude of the adjustment at each iteration
+    step_size_adaptive_multiplier: 0.3
+    # Initial step size
+    step_size_adaptive_initial: 0.1
+
+    # Choose either 'steps_per_iteration' or 'minutes_per_iteration'
+    steps_per_iteration: 250
+    # Amount of times to independently optimise each point in the profile
+    repetitions: 2
+
+    # Set path to MCMC to initialise from
+    # Can be made with either MontePython or cobaya; need only be readable by GetDist
+    start_from_mcmc: 'input/example_montepython/mcmc/chain_'
+    # 'xi' parameter of section 3 in the PROSPECT release paper
+    start_bin_fraction: 0.1
+
+    # Plots the profile when saving to disk
+    plot_profile: True
+    # If True, plot also initial profile and other statistics in the profile plot
+    detailed_plot: True
+    # If True, plot profile in terms of Delta_chi2 quantity instead
+    plot_Delta_chi2: False
+    # If True, make additional figure with schedule statistics (loglkl, acceptance rate, step size + temperature)
+    plot_schedule: True
+
+    # Confidence levels of the intervals constructed when saving to disk
+    confidence_levels: [0.68, 0.95]
+

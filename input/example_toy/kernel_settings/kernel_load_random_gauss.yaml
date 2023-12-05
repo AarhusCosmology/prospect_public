@@ -1,0 +1,2 @@
+function: 'random_gaussian'
+load: 'input/example_toy/kernel_settings/random_gauss.pkl'

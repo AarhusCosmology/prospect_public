@@ -1,0 +1,16 @@
+#------Experiments to test (separated with commas)-----
+
+data.experiments=['sh0es']
+
+#------ Parameter list -------
+# Cosmological parameters list
+data.parameters['h']         	= [0.703,  0.6,0.8, 0.0065, 1,   'cosmo']
+data.parameters['omega_cdm']   	= [0.12,   0.08,0.2,0.0001, 1,   'cosmo']
+
+
+#------ Mcmc parameters ----
+# Number of steps taken, by default (overwritten by the -N command)
+data.N=10
+# Number of accepted steps before writing to file the chain. Larger means less
+# access to disc, but this is not so much time consuming.
+data.write_step=5

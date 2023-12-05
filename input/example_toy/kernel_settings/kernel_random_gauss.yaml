@@ -1,0 +1,4 @@
+function: 'random_gaussian'
+dimension: 20
+std_scale: 0.1
+off_diag_factor: 0.05
