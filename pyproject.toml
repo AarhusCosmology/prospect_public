@@ -25,7 +25,7 @@ classifiers = [
 [project.scripts]
 prospect = "prospect.run:run_from_shell"
 prospect-analyse = "prospect.run:analyse_from_shell"
-prospect-reanneal = "prospect.profile:reanneal_from_shell"
+prospect-reoptimise = "prospect.profile:reanneal_from_shell"
 
 [tool.setuptools.packages.find]
 exclude = ["input", "test"]
