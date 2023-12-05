@@ -1,1 +1,2 @@
-Toy example.
+Toy example
+=====================

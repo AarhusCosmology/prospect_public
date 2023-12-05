@@ -28,8 +28,10 @@ PROSPECT documentation
 Introduction
 ------------
 
+
+
 .. toctree::
    :maxdepth: 2
 
    installation
-   examples
+   examples/examples

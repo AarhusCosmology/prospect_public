@@ -1,29 +1,18 @@
-# prospect
-PROSPECT (working title): A profile likelihood code for efficient frequentist cosmological inference
+![prospect logo](/doc/logo.png "")
 
-## How to install:
+# PROSPECT
+### A profile likelihood code for frequentist cosmological inference
 
-` pip install . `
+| Author: | Emil Brinch Holm (ebholm@phys.au.dk) |
+| Documentation: | [Documentation at GitHub pages](https://aarhuscosmology.github.io/prospect/index.html) |
+| Installation: | `pip install prospect-public` (but see documentation) |
+| Release paper: | *to appear on arXiv soon.* |
 
-If developing the code, remember to install in editor mode:
+## Having issues?
+If you are experiencing problems using PROSPECT, do not hesitate to write a mail at ebholm@phys.au.dk or submit an issue on the repository here.
 
-` pip install -e . ` 
-
-This will propagate your changes to the source code without need for reinstalling. 
-
-
-## How to run:
-
-PROSPECT runs either from an input yaml file or from a folder made by a previous run of PROSPECT. It will detect on its own what type of input is given.
-
-Additionally, PROSPECT can be run either from the command line or interactively in Python.
-
-To run from the command line:
-
-` prospect input/debug.yaml `
-
-To run from inside a Python script:
-
-` from prospect.run import run; run(input) ` 
-
-where `input` is a string pointing to either the yaml input file or an output folder of a previous PROSPECT run.
+## How to cite 
+If you are using PROSPECT for a publication, please cite the PROSPECT release paper: *to appear on arXiv soon.* In addition, please cite the codes that PROSPECT uses in your work. This could be:
+* An MCMC sampler, either [MontePython](https://github.com/brinckmann/montepython_public) or [cobaya](https://github.com/CobayaSampler/cobaya)
+* Theory codes, such as [CLASS](https://github.com/lesgourg/class_public) or [CAMB](https://github.com/cmbant/CAMB)
+* Data measurements and likelihoods that you use, for example the Planck 2018 data release [arXiv:1807.06209](https://arxiv.org/abs/1807.06209).

@@ -1,1 +1,3 @@
-Cobaya example.
+Cobaya example
+=====================
+
