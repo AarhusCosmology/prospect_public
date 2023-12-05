@@ -1,4 +1,5 @@
 from collections import defaultdict
+from copy import deepcopy
 import os 
 import time
 from typing import Type
@@ -44,11 +45,18 @@ class AnalyseProfileTask(BaseTask):
         print("Running profile analysis script...")
         kernel = initialise_kernel(self.config.kernel, self.config.io.dir, self.id)
         optimise_tasks, initialise_tasks = [], []
+        param_vals = []
         for task in tasks:
             if task.type == 'OptimiseTask':
+                if task.optimise_settings['fixed_param_val'] not in param_vals:
+                    param_vals.append(task.optimise_settings['fixed_param_val'])
                 optimise_tasks.append(task)
             elif task.type == 'InitialiseOptimiserTask':
                 initialise_tasks.append(task)
+
+        param_vals = np.sort(param_vals)
+        old_param_vals = deepcopy(self.config.profile.values)
+        self.config.profile.values = param_vals
 
         if not os.path.isdir(self.dir):
             os.makedirs(self.dir)
@@ -69,6 +77,7 @@ class AnalyseProfileTask(BaseTask):
             tic = time.perf_counter()
             self.plot_schedule(optimise_tasks)
             print(f"Plotted schedule in {time.perf_counter() - tic:.5} s")
+        self.config.profile.values = old_param_vals
     
     def write_profile_status(self, optimise_tasks, initialise_tasks):
         status_file = os.path.join(self.dir, f'{self.config.profile.parameter}_status.txt')
@@ -77,7 +86,7 @@ class AnalyseProfileTask(BaseTask):
         with open(status_file,"w") as file:
             # Write header
             file.write(f"{self.config.profile.parameter:14.10} ")
-            file.write(f"\t\t\t\t | rep. no.  current iter \t current loglkl \t best iter \t best loglkl \t converged? ")
+            file.write(f"\t\t | rep. no.  current iter \t current loglkl \t best iter \t best loglkl \t converged? ")
             
             for fixed_val in self.config.profile.values:
                 file.write(f"\n{fixed_val:14.10} ")

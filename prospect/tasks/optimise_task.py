@@ -29,21 +29,22 @@ class OptimiseTask(BaseTask):
 
     def emit_tasks(self) -> list[Type[BaseTask]]:
         loglkl_improvement = self.optimise_settings['current_best_loglkl'] - self.optimiser.bestfit['loglkl']
-        if loglkl_improvement < 0.:
-            print(f"Best chi2 didn't improve since last iteration ({self.optimise_settings['current_best_loglkl']:.10}). Emitting next OptimiseTask.")
-        elif self.optimise_settings['current_best_loglkl'] == np.inf:
-            # First iteration, continue
-            pass
-        # New convergence criterion: All loglkls appearing in chain must be < tolerance
-        # Perhaps a better conv crit is not to compare bestfits but just the loglkl of the last points
-        # or alternatively the Euclidean distance between last points (but this is difficult to normalize...)
-        #elif np.any(2*np.array(self.optimiser.mcmc.chain.loglkls) > self.config.profile.chi2_tolerance):
-        elif 2*loglkl_improvement > self.config.profile.chi2_tolerance:
-            print(f"Best chi2 improved by {2*loglkl_improvement:.4e} since last iteration.\nEmitting new OptimiseTask since some loglkls deviated more than tolerance chi2_tolerance={self.config.profile.chi2_tolerance}.")
-        elif self.optimiser.bestfit['accepted_steps'] > 1:
-            print(f"Best chi2 improved by {2*loglkl_improvement:.4e} since last iteration.\nFinishing optimisation since all loglkls deviated less than tolerance chi2_tolerance={self.config.profile.chi2_tolerance}.")
-            self.converged = True
-            return []
+        if self.config.profile.chi2_tolerance is not None and self.config.profile.chi2_tolerance != 0.0:
+            if loglkl_improvement < 0.:
+                print(f"Best chi2 didn't improve since last iteration ({self.optimise_settings['current_best_loglkl']:.10}). Emitting next OptimiseTask.")
+            elif self.optimise_settings['current_best_loglkl'] == np.inf:
+                # First iteration, continue
+                pass
+            # New convergence criterion: All loglkls appearing in chain must be < tolerance
+            # Perhaps a better conv crit is not to compare bestfits but just the loglkl of the last points
+            # or alternatively the Euclidean distance between last points (but this is difficult to normalize...)
+            #elif np.any(2*np.array(self.optimiser.mcmc.chain.loglkls) > self.config.profile.chi2_tolerance):
+            elif 2*loglkl_improvement > self.config.profile.chi2_tolerance:
+                print(f"Best chi2 improved by {2*loglkl_improvement:.4e} since last iteration.\nEmitting new OptimiseTask since some loglkls deviated more than tolerance chi2_tolerance={self.config.profile.chi2_tolerance}.")
+            elif self.optimiser.bestfit['accepted_steps'] > 1:
+                print(f"Best chi2 improved by {2*loglkl_improvement:.4e} since last iteration.\nFinishing optimisation since all loglkls deviated less than tolerance chi2_tolerance={self.config.profile.chi2_tolerance}.")
+                self.converged = True
+                return []
         new_settings = self.optimiser.get_next_iteration_settings()
         new_settings['iteration_number'] = self.optimise_settings['iteration_number'] + 1
         new_settings['repetition_number'] = self.optimise_settings['repetition_number']

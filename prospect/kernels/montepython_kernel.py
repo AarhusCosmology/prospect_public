@@ -50,6 +50,8 @@ class InitialiseMontePython:
             mp['compute_lkl'] = sampler.compute_lkl
             mp['get_covmat'] = sampler.get_covariance_matrix
             mp['read_args'] = sampler.read_args_from_bestfit
+            from io_mp import CosmologicalModuleError
+            mp['cosmo_soft_exception'] = CosmologicalModuleError
         except Exception:
             raise ImportError('Could not import MontePython modules. Did you specify the correct root path in the .conf file?')
 
@@ -67,9 +69,9 @@ class MontePythonKernel(BaseKernel):
         self.output_folder = output_folder
         self.config_kernel = config_kernel
 
-        from classy import CosmoSevereError, CosmoComputationError
+        from classy import CosmoSevereError
         self.severe_exception = CosmoSevereError
-        self.computation_exception = CosmoComputationError
+        self.computation_exception = self.mp['cosmo_soft_exception']
 
     def set_parameter_dict(self):
         self.mp_to_prospect_name = {}

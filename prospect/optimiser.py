@@ -139,7 +139,9 @@ class SimulatedAnnealing(BaseOptimiser):
                 elif self.bestfit['acceptance_rate'] < self.config.profile.step_size_adaptive_interval[0]:
                     # Acceptance rate is small, reduce step size
                     new_step_size = self.settings['step_size']*(1 - self.config.profile.step_size_adaptive_multiplier)
-                
+                else:
+                    # Step size is inside target interval, don't change
+                    new_step_size = self.settings['step_size']
         else:
             raise ValueError('Invalid temperature schedule.')
         

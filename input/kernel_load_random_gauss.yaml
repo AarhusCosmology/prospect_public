@@ -1,2 +1,0 @@
-function: 'random_gaussian'
-load: 'input/profile/analytical_random_gauss/analytical/random_gauss.pkl'

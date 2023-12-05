@@ -15,8 +15,8 @@ class InitialiseProfileTask(BaseTask):
     
     def emit_tasks(self) -> list[Type[BaseTask]]:
         task_list = []
-        for param_val in self.config.profile.values:
-            for idx_rep in range(self.config.profile.repetitions):
+        for idx_rep in range(self.config.profile.repetitions):
+            for param_val in self.config.profile.values:
                 task_list.append(InitialiseOptimiserTask(self.config, param_val, idx_rep))
         return task_list
 

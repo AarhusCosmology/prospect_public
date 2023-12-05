@@ -68,10 +68,10 @@ def reanneal(yaml_schedule, prospect_folder, override_queue=False):
     
     # Push new tasks
     submit_count = 0
-    for param_val in new_config.profile.values:
-        if param_val in best_tasks:
-            # Start from the old bestfit
-            for idx_rep in range(new_config.profile.repetitions):
+    for idx_rep in range(new_config.profile.repetitions):
+        for param_val in new_config.profile.values:
+            if param_val in best_tasks:
+                # Start from the old bestfit
                 optimise_settings = {
                     'current_best_loglkl': best_tasks[param_val]['loglkl'],
                     'fixed_param_val': param_val,
@@ -86,9 +86,8 @@ def reanneal(yaml_schedule, prospect_folder, override_queue=False):
                 }
                 scheduler.push_task(OptimiseTask(scheduler.config, optimise_settings))
                 submit_count += 1
-        else:
-            # Launch new optimisation
-            for idx_rep in range(new_config.profile.repetitions):
+            else:
+                # Launch new optimisation
                 scheduler.push_task(InitialiseOptimiserTask(scheduler.config, param_val, idx_rep))
                 submit_count += 1
     
@@ -269,9 +268,9 @@ class Arguments:
             If chi2 changed less than this since last iteration, stop.
         
         """
-        val_type = float | int
+        val_type = float | int | NoneType
         def get_default(self, config_yaml: dict[str, Any]):
-            return 0.05
+            return None
     
     class detailed_plot(InputArgument):
         """
