@@ -8,6 +8,7 @@ on:
           - documentation
 #        paths:
 #          - 'doc/**'
+#
 
 jobs:
     deploy_doc:
