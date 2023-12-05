@@ -71,10 +71,11 @@ class BaseKernel(ABC):
             prop[fixed_param] = [param['fixed_value']]
         try:
             return self._loglkl(prop)
+        except self.computation_exception as e:
+            print(f"Soft exception {e} occurred. Trying a new proposal.")
+            return np.inf
         except self.severe_exception:
             raise ValueError("Severe exception occurred in likelihood computation. Stopping process.")
-        except self.computation_exception:
-            return np.inf
     
     def log_uniform_prior(self, position):
         if self.outside_of_prior_bound(position):
