@@ -23,15 +23,9 @@ PROSPECT documentation
 
 :raw-html:`<font size="+1">This is the documentation for PROSPECT, a profile likelihood code for efficient frequentist cosmological inference.</font>`
 
-
-
-Introduction
-------------
-
-
+:raw-html:`<font size="+1">Since the documentation is currently a work in progress, we recommend that you use the <a class="reference external" href="https://github.com/AarhusCosmology/prospect_public/blob/main/README.md">README of the PROSPECT repository as documentation</a> for now.</font>`
 
 .. toctree::
    :maxdepth: 2
 
    installation
-   examples/examples
