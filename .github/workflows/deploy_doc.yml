@@ -33,4 +33,5 @@ jobs:
                 deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
                 external_repository: AarhusCosmology/aarhuscosmology.github.io
                 publish_branch: gh-pages
-                publish_dir: ./prospect
+                publish_dir: publish
+                destination_dir: prospect
