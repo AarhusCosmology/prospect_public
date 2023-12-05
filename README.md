@@ -1,12 +1,15 @@
 ![prospect logo](/doc/logo.png "")
 
-# PROSPECT
-### A profile likelihood code for frequentist cosmological inference
-
+# PROSPECT: A profile likelihood code for frequentist cosmological inference
+| ----- | ----- |
 | Author: | Emil Brinch Holm (ebholm@phys.au.dk) |
 | Documentation: | [Documentation at GitHub pages](https://aarhuscosmology.github.io/prospect/index.html) |
 | Installation: | `pip install prospect-public` (but see documentation) |
 | Release paper: | *to appear on arXiv soon.* |
+| ----- | ----- |
+
+## How to use
+Check out the [documentation](https://aarhuscosmology.github.io/prospect/index.html) for instructions on installation, how to use, and example workflows.
 
 ## Having issues?
 If you are experiencing problems using PROSPECT, do not hesitate to write a mail at ebholm@phys.au.dk or submit an issue on the repository here.
