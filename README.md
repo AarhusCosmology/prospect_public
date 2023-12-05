@@ -10,13 +10,19 @@
 
 ## How to use
 
-Install PROSPECT by running `pip install prospect-public` in a terminal. *Note: PROSPECT requires Python version 3.10 or later*. 
+Install PROSPECT by running `pip install prospect-public` in a terminal. *Note:* PROSPECT *requires Python version 3.10 or later*. 
 
 PROSPECT runs either fron an input yaml file or from a folder made by a previous run of PROSPECT (it will detect by itself what type of input is given). To run it from the command line, do 
-```prospect my_input_file.yaml``` 
+```
+prospect my_input_file.yaml
+``` 
 or 
-```prospect my_prospect_output_folder```
-In particular, you can resume PROSPECT runs that were cancelled using the latter run mode. 
+```
+prospect my_prospect_output_folder
+```
+In particular, you can resume PROSPECT runs that were cancelled using the latter command. 
+
+**Run modes**: PROSPECT supports running serially, threaded or in parallel using MPI. You can specify the run mode in the input file as demonstrated in file `input/explanatory.yaml`.
 
 #### Example files
 
@@ -28,7 +34,7 @@ To check that PROSPECT is installed correctly, you can try running some of the e
 
 * `example_cobaya`: A simple example showing how to interface PROSPECT with [cobaya](https://github.com/CobayaSampler/cobaya). 
 
- To learn how to create your own PROSPECT input files, consult `input/explanatory.yaml` which presents the possible options for input arguments. 
+ To learn how to create your own PROSPECT input files, consult `input/explanatory.yaml` which presents the possible options for input arguments. *Tip: The example files have hardcoded relative paths, so make sure to run them outside of the`input/example_*` subdirectory.*
 
 #### Loading a profile in Python
 
