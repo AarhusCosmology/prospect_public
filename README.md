@@ -10,12 +10,35 @@
 
 ## How to use
 
-Install PROSPECT by running `pip install prospect-public` in a terminal.
+Install PROSPECT by running `pip install prospect-public` in a terminal. *Note: PROSPECT requires Python version 3.10 or later*. 
 
-PROSPECT runs either fron an input yaml file or from a folder made by a previous run of PROSPECT (it will detect by itself what type of input is given). To run it from the command line, do `prospect my_input_file.yaml` or `prospect my_prospect_output_folder`. To check that PROSPECT is installed correctly, you can try running the `example_toy.yaml` model in the `input/example_toy` directory. Similar example input files can be found in `input/example_montepython` and `input/example_cobaya` for usage with either MontePython or cobaya.
+PROSPECT runs either fron an input yaml file or from a folder made by a previous run of PROSPECT (it will detect by itself what type of input is given). To run it from the command line, do 
+```prospect my_input_file.yaml``` 
+or 
+```prospect my_prospect_output_folder```
 
+### Example files
+
+To check that PROSPECT is installed correctly, you can try running some of the example files provided in the `input/` directory.
+
+* `example_toy`: An analytical 30-dimensional Gaussian likelihood. Since this evaluates quickly, it is a good first test of using PROSPECT.
+
+* `example_montepython`: A simple example showing how to interface PROSPECT with [MontePython](https://github.com/brinckmann/montepython_public). 
+
+* `example_cobaya`: A simple example showing how to interface PROSPECT with [cobaya](https://github.com/CobayaSampler/cobaya). 
+
+ To learn how to create your own PROSPECT input files, consult `input/explanatory.yaml` which presents the possible options for input arguments. 
+
+### Loading a profile in Python
+From a PROSPECT run that has completed an analysis task, the profile likelihood data is stored in the `my_output/profile/` subdirectory of the output folder. PROSPECT provides a quick tool to load the profile likelihood in Python as follows:
+```
+from prospect.profile import load_profile
+profile_dict = load_profile('path_to_my_run')
+```
+whence `profile_dict` is a dictionary with the best-fitting parameter values at each point in the profile, along with the associated likelihood values. 
+
+### Loading PROSPECT snapshots
 PROSPECT runs can be loaded and inspected interactively in Python. To do so, from Python, import the `load` function by running `from prospect.run import load`. `load` takes the path to an output folder from a previous PROSPECT run, and returns a `Scheduler` instance whose tasks can be accessed directly. For example,
-
 ```
 from prospect.run import load 
 my_run = load('path_to_my_run')
