@@ -15,7 +15,7 @@ PROSPECT documentation
    <col class="field-name" />
    <col class="field-body" />
    <tbody valign="top">
-   <tr><td class="field-name"><b>Release paper</b></td><td class="field-body"><i>To appear on arXiv soon.</i></td></tr>
+   <tr><td class="field-name"><b>Release paper</b></td><td class="field-body"><a class="reference external" href="https://arxiv.org/abs/2312.02972">arXiv:2312.02972</a></td></tr>
    <tr><td class="field-name"><b>GitHub</b></td><td class="field-body"><a class="reference external" href="https://github.com/AarhusCosmology/prospect_public">https://github.com/AarhusCosmology/prospect_public</a>&emsp;</td></tr>
    <tr><td class="field-name"><b>Author</b></td><td class="field-body">Emil Brinch Holm, Aarhus University&emsp;<a class="reference external" href="mailto:ebholm&#37;&#52;&#48;phys&#46;au&#46;dk">ebholm<span>&#64;</span>phys<span>&#46;</span>au<span>&#46;</span>dk</a></td></tr>
    </tbody>
