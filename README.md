@@ -28,11 +28,13 @@ In particular, you can resume PROSPECT runs that were cancelled using the latter
 
 To check that PROSPECT is installed correctly, you can try running some of the example files provided in the `input/` directory.
 
-* `example_toy`: An analytical 30-dimensional Gaussian likelihood. Since this evaluates quickly, it is a good first test of using PROSPECT.
+* `example_toy/example_toy.yaml`: An analytical 30-dimensional Gaussian likelihood. Since this evaluates quickly, it is a good first test of using PROSPECT.
 
-* `example_montepython`: A simple example showing how to interface PROSPECT with [MontePython](https://github.com/brinckmann/montepython_public). Before using this, you must set the correct `path` to your `montepython_public/montepython` directory in the yaml file `example_montepython.yaml` and specify the correct paths to your CLASS installation in `example_montepython/example.conf`. 
+* `example_montepython/example_montepython.yaml`: A simple 2-parameter example with a Gaussian likelihood on the Hubble constant, showing how to interface PROSPECT with [MontePython](https://github.com/brinckmann/montepython_public). Before using this, you must set the correct `path` to your `montepython_public/montepython` directory in the yaml file `example_montepython.yaml` and specify the correct paths to your CLASS installation in `example_montepython/example.conf`. 
 
-* `example_cobaya`: A simple example showing how to interface PROSPECT with [cobaya](https://github.com/CobayaSampler/cobaya). 
+* `example_montepython/base2018TTTEEE.yaml`: A profile of the Hubble constant using the example file `base2018TTTEEE.param` of MontePython, which employs Planck high-ell TTTEEE and low-ell EE and TT data. Remember to also set the correct `path` in `base2018TTTEEE.yaml` as well as the correct paths to CLASS and clik in `example.conf`, as above. In this example, we have set the optimiser settings such that the profiles should converge somewhat quickly (i.e. each optimisation should take on the order of 2 hours on 8 CPU cores) such that you can use them as a starting point for your own optimisation.
+
+* `example_cobaya/example_cobaya.yaml`: A simple example showing how to interface PROSPECT with [cobaya](https://github.com/CobayaSampler/cobaya). 
 
 To learn how to create your own PROSPECT input files, consult `input/explanatory.yaml` which presents the possible options for input arguments. *Tip: The example files have hardcoded relative paths, so make sure to run them outside of the`input/example_*` subdirectory.*
 

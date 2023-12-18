@@ -49,7 +49,7 @@ profile:
 
     # Set path to MCMC to initialise from
     # Can be made with either MontePython or cobaya; need only be readable by GetDist
-    start_from_mcmc: 'input/example_montepython/mcmc/chain_'
+    start_from_mcmc: 'input/example_montepython/mcmc/example_montepython/chain_'
     # 'xi' parameter of section 3 in the PROSPECT release paper
     start_bin_fraction: 0.1
 
