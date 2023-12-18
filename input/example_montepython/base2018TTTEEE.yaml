@@ -1,14 +1,14 @@
 io:
-     jobname: 'example_montepython'
+     jobname: 'base2018TTTEEE'
      write: True
      # relative to directory prospect is called from
-     dir: 'output/example_montepython'
+     dir: 'output/base2018TTTEEE'
      overwrite_dir: False
      snapshot_interval: 300.0
 
 run:
      jobtype: 'profile'
-     mode: 'serial'
+     mode: 'mpi'
 
 kernel:
      type: 'montepython'
@@ -20,10 +20,10 @@ profile:
     # Choose parameter to profile
     # If MontePython: Must be a varied 'cosmo' parameter
     # If cobaya: Must be a sampled parameter
-    parameter: 'h'
+    parameter: 'omega_cdm'
     # Points to evaluate profile at
     # Python expressions allowed as strings
-    values: 'np.linspace(0.71, 0.75, 10)'
+    values: 'np.linspace(0.105, 0.13, 10)'
 
     optimiser: 'simulated annealing'
 
@@ -49,7 +49,7 @@ profile:
 
     # Set path to MCMC to initialise from
     # Can be made with either MontePython or cobaya; need only be readable by GetDist
-    start_from_mcmc: 'input/example_montepython/mcmc/base2018TTTEEE/ASDFASDFASDFASDF_'
+    start_from_mcmc: 'input/example_montepython/mcmc/base2018TTTEEE/base2018TTTEEE_'
     # 'xi' parameter of section 3 in the PROSPECT release paper
     start_bin_fraction: 0.1
 
