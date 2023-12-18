@@ -1,42 +1,29 @@
 io:
-     jobname: 'example'
-     # If True, write to disk
+     jobname: 'base2018TTTEEE'
      write: True
-     # Relative or absolute path to output directory
-     dir: 'output/example'
+     # relative to directory prospect is called from
+     dir: 'output/base2018TTTEEE'
      overwrite_dir: False
-     # Writes to disk when a task finishes if 'snapshot_interval' seconds
-     # has passed since last time writing to disk
-     # Note: Always writes when finishing
-     snapshot_interval: 250.0
+     snapshot_interval: 300.0
 
 run:
      jobtype: 'profile'
-     # Choose either 'serial', 'threaded' or 'mpi'
-     # (If 'mpi': Remember to run with mpi, e.g. `mpiexec -n N prospect example.yaml`)
      mode: 'mpi'
 
 kernel:
-     # Either 'montepython' or 'cobaya' (or 'analytical' for testing purposes)
      type: 'montepython'
-     # If 'montepython', give path to the MontePython parameter file
-     # If 'cobaya', give path to the input .yaml file used by cobaya
-     param: 'input/example_montepython/example.param'
-     # If 'montepython', give path to the .conf file used by MontePython here
-     # Otherwise, remove or leave empty
+     param: 'input/example_montepython/base2018TTTEEE.param'
      conf: 'input/example_montepython/example.conf'
-     # If 'montepython', give the path to the montepython_public/montepython directory
-     # Otherwise, remove or leave empty
      path: 'path_to_montepython'
 
 profile:
     # Choose parameter to profile
     # If MontePython: Must be a varied 'cosmo' parameter
     # If cobaya: Must be a sampled parameter
-    parameter: 'h'
+    parameter: 'omega_cdm'
     # Points to evaluate profile at
     # Python expressions allowed as strings
-    values: 'np.linspace(67.0, 73.0, 10)'
+    values: 'np.linspace(0.105, 0.13, 10)'
 
     optimiser: 'simulated annealing'
 
@@ -58,13 +45,11 @@ profile:
     # Choose either 'steps_per_iteration' or 'minutes_per_iteration'
     steps_per_iteration: 1000
     # Amount of times to independently optimise each point in the profile
-    repetitions: 3
+    repetitions: 1
 
     # Set path to MCMC to initialise from
     # Can be made with either MontePython or cobaya; need only be readable by GetDist
-    # Should point to be basename of the chain, i.e. the following input expects chains to be named
-    # test_1.txt, test_2.txt etc., and there must also be a test.paramnames file 
-    start_from_mcmc: 'input/example_montepython/mcmc/test'
+    start_from_mcmc: 'input/example_montepython/mcmc/base2018TTTEEE/base2018TTTEEE_'
     # 'xi' parameter of section 3 in the PROSPECT release paper
     start_bin_fraction: 0.1
 

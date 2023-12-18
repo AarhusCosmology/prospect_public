@@ -34,16 +34,8 @@ class InitialiseMontePython:
         return (None, None)
 
     def initialise_montepython(config_kernel, output_folder, id):
-        mp_path = None
-        print(f"Reading MontePython location from configuration file {config_kernel.conf}")
-        for line in open(config_kernel.conf, 'r'):
-            if line.startswith("root"):
-                mp_path = ast.literal_eval(line.split('=')[1])
-        if mp_path is None:
-            raise ValueError('You must specify the path to the superdirectory of montepython_public folder as "root" in the .conf file.')
-
         mp = {}
-        sys.path.append(f"{mp_path}/montepython_public/montepython")
+        sys.path.append(f"{config_kernel.path}")
         try:
             from initialise import initialise as mp_initialise
             import sampler
@@ -53,7 +45,7 @@ class InitialiseMontePython:
             from io_mp import CosmologicalModuleError
             mp['cosmo_soft_exception'] = CosmologicalModuleError
         except Exception:
-            raise ImportError('Could not import MontePython modules. Did you specify the correct root path in the .conf file?')
+            raise ImportError(f'Could not import MontePython modules. Is the path you gave, {config_kernel.path}, correctly pointing to the /montepython_public/montepython directory?')
 
         mp_dir = f"{output_folder}/montepython/id_{id}"
         mp_command_input = f'run -p {config_kernel.param} --conf {config_kernel.conf} -o {mp_dir} --chain-number 0'

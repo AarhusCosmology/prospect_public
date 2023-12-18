@@ -1,8 +1,8 @@
 io:
-     jobname: 'example'
+     jobname: 'example_toy'
      write: True
      # relative or absolute path to output directory
-     dir: 'output/example'
+     dir: 'output/example_toy'
      overwrite_dir: False
      snapshot_interval: 10.0
 
@@ -47,7 +47,7 @@ profile:
     start_bin_fraction: 0.1
 
     plot_profile: True
-    detailed_plot: True
+    detailed_plot: False
     plot_Delta_chi2: False
     plot_schedule: True
 
