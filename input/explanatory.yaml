@@ -19,12 +19,15 @@ run:
 kernel:
      # Either 'montepython' or 'cobaya' (or 'analytical' for testing purposes)
      type: 'montepython'
-     # If 'montepython', give path to the .conf file used by MontePython here
-     # Otherwise, leave empty
-     conf: 'input/example_montepython/example.conf'
      # If 'montepython', give path to the MontePython parameter file
      # If 'cobaya', give path to the input .yaml file used by cobaya
      param: 'input/example_montepython/example.param'
+     # If 'montepython', give path to the .conf file used by MontePython here
+     # Otherwise, remove or leave empty
+     conf: 'input/example_montepython/example.conf'
+     # If 'montepython', give the path to the montepython_public/montepython directory
+     # Otherwise, remove or leave empty
+     path: 'path_to_montepython'
 
 profile:
     # Choose parameter to profile

@@ -14,6 +14,7 @@ kernel:
      type: 'montepython'
      param: 'input/example_montepython/example.param'
      conf: 'input/example_montepython/example.conf'
+     path: 'path_to_montepython'
 
 profile:
     # Choose parameter to profile

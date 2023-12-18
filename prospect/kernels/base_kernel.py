@@ -161,6 +161,18 @@ class Arguments:
                 if not os.path.isfile(os.path.join(os.getcwd(), config['param'])):
                     raise ValueError(f"The file pointed to in the 'conf' field of the 'kernel' input, which has the value {config['conf']}, could not be found.")
     
+    class path(InputArgument):
+        # Only use if MontePython: Should point to the 'montepython' directory
+        val_type = str
+        def get_default(self, config_yaml: dict[str, Any]):
+            if config_yaml['kernel']['type'] == 'analytical' or config_yaml['kernel']['type'] == 'cobaya':
+                return ''
+            return None
+        def validate(self, config: dict[str, Any]) -> None:
+            if config['type'] == 'montepython':
+                if not os.path.isdir(os.path.join(os.getcwd(), config['path'])):
+                    raise ValueError(f"The directory pointed to in the 'path' field of the 'kernel' input, which has the value {config['path']}, could not be found.")
+
     class debug(InputArgument):
         # For cobaya: Debug mode, drops debug files in kernel subfolder
         val_type = bool
@@ -170,4 +182,5 @@ class Arguments:
     type: type
     param: param
     conf: conf
+    path: path
     debug: debug
