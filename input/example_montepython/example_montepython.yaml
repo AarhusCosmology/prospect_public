@@ -42,7 +42,7 @@ profile:
     step_size_adaptive_initial: 0.1
 
     # Choose either 'steps_per_iteration' or 'minutes_per_iteration'
-    steps_per_iteration: 250
+    steps_per_iteration: 1000
     # Amount of times to independently optimise each point in the profile
     repetitions: 2
 
@@ -55,7 +55,7 @@ profile:
     # Plots the profile when saving to disk
     plot_profile: True
     # If True, plot also initial profile and other statistics in the profile plot
-    detailed_plot: True
+    detailed_plot: False
     # If True, plot profile in terms of Delta_chi2 quantity instead
     plot_Delta_chi2: False
     # If True, make additional figure with schedule statistics (loglkl, acceptance rate, step size + temperature)
