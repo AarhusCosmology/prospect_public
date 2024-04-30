@@ -9,7 +9,9 @@ from typing import Type
 from dataclasses import dataclass
 from prospect.input import Configuration
 from prospect.tasks.base_task import BaseTask
+from prospect.tasks.base_analyse_task import BaseAnalyseTask
 from prospect.tasks.analyse_profile_task import AnalyseProfileTask
+from prospect.tasks.analyse_global_optimisation_task import AnalyseGlobalOptimisationTask
 from prospect.tasks.initialise import initialise_tasks
 from multiprocessing import Condition
 
@@ -70,6 +72,9 @@ class Scheduler:
         if self.config.io.write:
             if self.config.run.jobtype == 'profile':
                 analysis_task = self.get_profile_analysis()
+                analysis_task.run([task for task in self.tasks.done.values() if task.id in analysis_task.required_task_ids])
+            elif self.config.run.jobtype == 'global_optimisation':
+                analysis_task = self.get_global_optimisation_analysis()
                 analysis_task.run([task for task in self.tasks.done.values() if task.id in analysis_task.required_task_ids])
             self.dump_snapshot()
             self.status_update()
@@ -142,10 +147,10 @@ class Scheduler:
 
         if self.config.io.write:
             if time.time() > self.next_dump_time:
-                if self.config.run.jobtype == 'profile' and finished_task.type != 'AnalyseProfileTask':
-                    if 'AnalyseProfileTask' not in [queued_task.type for queued_task in self.tasks.queued]:
-                        if 'AnalyseProfileTask' not in [ongoing_task.type for ongoing_task in self.tasks.ongoing.values()]:
-                            self.push_task(self.get_profile_analysis())
+                if finished_task.type != 'AnalyseProfileTask' and finished_task.type != 'AnalyseGlobalOptimisationTask':
+                    analyse_task = self.get_analysis_task()
+                    if analyse_task is not None:
+                        self.push_task(analyse_task)
                 self.dump_snapshot()
                 self.status_update()
 
@@ -202,10 +207,17 @@ class Scheduler:
                 status_file.write(get_write_line(task_done))
             status_file.write("\n")
     
-    def get_profile_analysis(self) -> AnalyseProfileTask:
+    def get_analysis_task(self) -> Type[BaseAnalyseTask]:
         required_tasks = [id for id, task in self.tasks.done.items() if task.type == 'OptimiseTask' or task.type == 'InitialiseOptimiserTask']
-        return AnalyseProfileTask(self.config, required_tasks)
-    
+        if self.config.run.jobtype == 'profile':
+            if 'AnalyseProfileTask' not in [queued_task.type for queued_task in self.tasks.queued]:
+                if 'AnalyseProfileTask' not in [ongoing_task.type for ongoing_task in self.tasks.ongoing.values()]:
+                    return AnalyseProfileTask(self.config, required_tasks)
+        elif self.config.run.jobtype == 'global_optimisation':
+            if 'AnalyseGlobalOptimisationTask' not in [queued_task.type for queued_task in self.tasks.queued]:
+                if 'AnalyseGlobalOptimisationTask' not in [ongoing_task.type for ongoing_task in self.tasks.ongoing.values()]:
+                    return AnalyseGlobalOptimisationTask(self.config, required_tasks)
+
 class SerialContext:
     class MockFuture:
         def __init__(self, finished_task: Type[BaseTask]) -> None:

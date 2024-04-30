@@ -1,3 +1,3 @@
 from prospect.run import run
-test_input = "input/debug.yaml"
+test_input = "input/explanatory.yaml"
 run(test_input)

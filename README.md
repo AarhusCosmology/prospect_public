@@ -49,6 +49,12 @@ profile_dict = load_profile('path_to_my_run')
 ```
 whence `profile_dict` is a dictionary with the best-fitting parameter values at each point in the profile, along with the associated likelihood values. 
 
+#### Global optimisation
+
+The efficient optimiser of PROSPECT can also be used to find global bestfits of your cosmology. An example for such an input .yaml file is found in the `input/example_toy/example_global_optimisation_toy.yaml` file. Starting from a .yaml file for a profile likelihood, you only need to change the `jobtype` input of the `run` section to 'global_optimisation' (rather than the usual 'profile'). All of the settings of the optimiser defined in the `profile` section are then used to carry out global optimisation of your model, giving an output folder similar in structure to that obtained from profile likelihoods runs. 
+
+*Note that when running with `jobtype: 'global_optimisation'`, the inputs `parameter`, `values`, `start_bin_fraction` as well as `plot_profile`, `detailed_plot`, `plot_Delta_chi2` and `confidence_levels` of the `profile` section are ignored, but the rest of the input, such as the schedules and initialisation procedures, are still used to define the settings of the optimiser.*
+
 #### Reoptimising
 
 Not satisfied with your profile? You can always queue new `OptimiseTask`s with the reoptimising feature. Add extra tasks from the terminal by running

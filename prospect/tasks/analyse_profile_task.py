@@ -10,7 +10,7 @@ from scipy.interpolate import interp1d
 from scipy import stats
 from prospect.input import Configuration
 from prospect.kernels.initialisation import initialise_kernel
-from prospect.tasks.base_task import BaseTask
+from prospect.tasks.base_analyse_task import BaseAnalyseTask
 from prospect.tasks.optimise_task import OptimiseTask
 
 # Switch matplotlib backend to one that doesn't pop up figures
@@ -20,24 +20,7 @@ def argmax(iterable):
     """From https://stackoverflow.com/questions/16945518/finding-the-index-of-the-value-which-is-the-min-or-max-in-python"""
     return max(enumerate(iterable), key=lambda x: x[1])[0]
 
-class AnalyseProfileTask(BaseTask):
-    priority = 75.0
-
-    # Figure settings
-    cm = 1/2.54  # centimeters in inches
-    fig = {
-        'width': 8.6*cm, # PRL figure width
-        'height': 2,
-        'fontsize': 11/1.1,
-        'rep_colors': ['b', 'r', 'g', 'c', 'y', 'm']*50,
-        'rep_ms': [4.5, 4.0, 3.5, 3, 2.5, 2., 1.5, 1., 0.5]*50,
-        'interval_styles': ['--', ':']*5
-    }
-
-    def __init__(self, config: Configuration, required_task_ids: list[int]):
-        super().__init__(config, required_task_ids)
-        self.dir = os.path.join(config.io.dir, config.run.jobtype)
-
+class AnalyseProfileTask(BaseAnalyseTask):
     def run(self, tasks: list[OptimiseTask]): 
         if not tasks:
             print(f"No tasks to analyse. Ending AnalyseProfileTask.")
@@ -58,9 +41,6 @@ class AnalyseProfileTask(BaseTask):
         old_param_vals = deepcopy(self.config.profile.values)
         self.config.profile.values = param_vals
 
-        if not os.path.isdir(self.dir):
-            os.makedirs(self.dir)
-        
         self.bestfits = self.sort_tasks(optimise_tasks, initialise_tasks)
         profile = self.compute_profile(self.bestfits)
         self.write_results(self.bestfits, kernel)
@@ -107,10 +87,6 @@ class AnalyseProfileTask(BaseTask):
                             file.write(f"\t {write_string}")
                         else:
                             file.write(f"\n\t\t\t\t {write_string}")
-
-    def emit_tasks(self) -> list[Type[BaseTask]]:
-        # Never emit anything; the OptimiseTasks manage convergence themselves.
-        return []
     
     def sort_tasks(self, optimise_tasks, initialise_tasks):
         # Order the tasks

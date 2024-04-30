@@ -1,0 +1,45 @@
+io:
+     jobname: 'example_toy'
+     write: True
+     # relative or absolute path to output directory
+     dir: 'output/example_toy'
+     overwrite_dir: False
+     snapshot_interval: 10.0
+
+run:
+     jobtype: 'global_optimisation'
+     # Choose either 'serial', 'threaded' or 'mpi'
+     # (If 'mpi': Remember to run with `mpiexec -n N prospect example.yaml`)
+     mode: 'serial'
+
+kernel:
+     type: 'analytical'
+     conf: ''
+     # This kernel loads a pre-generated 20d random Gaussian
+     # To generate your own, run with 'kernel_random_gauss.yaml' instead
+     param: 'input/example_toy/kernel_settings/kernel_load_random_gauss.yaml'
+
+profile:
+    optimiser: 'simulated annealing'
+
+    # Temperature changes from the endpoints of the range in 
+    # the amount of iterations given by 'max_iterations'
+    temperature_schedule: 'exponential'
+    temperature_range: [0.1, 0.001]
+    max_iterations: 20
+
+    # Adjusts step size at each iteration to lie in the interval chosen
+    step_size_schedule: 'adaptive'
+    step_size_adaptive_interval: [0.19, 0.21]
+    # Amplitude of the adjustment at each iteration
+    step_size_adaptive_multiplier: 0.3
+    step_size_adaptive_initial: 0.1
+
+    # Choose either 'steps_per_iteration' or 'minutes_per_iteration'
+    steps_per_iteration: 250
+    # Amount of times to independently optimise each point in the profile
+    repetitions: 3
+
+    start_from_mcmc: 'input/example_toy/mcmc/test'
+
+    plot_schedule: True
