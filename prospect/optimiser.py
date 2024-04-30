@@ -62,7 +62,10 @@ class SimulatedAnnealing(BaseOptimiser):
         self.mcmc = MetropolisHastings(config_mcmc, self.kernel, **mcmc_args)
 
     def optimise(self):
-        print(f"Running a simulated annealing iteration of parameter {self.config.profile.parameter}={self.settings['fixed_param_val']} with temperature {self.settings['temperature']}")
+        if self.config.run.jobtype == 'profile':
+            print(f"Running a simulated annealing iteration of parameter {self.config.profile.parameter}={self.settings['fixed_param_val']} with temperature {self.settings['temperature']}")
+        else:
+            print(f"Running a simulated annealing iteration with temperature {self.settings['temperature']}")
         if self.config.profile.steps_per_iteration is not None:
             self.mcmc.run_steps(self.config.profile.steps_per_iteration)
         elif self.config.profile.minutes_per_iteration is not None:
@@ -147,7 +150,6 @@ class SimulatedAnnealing(BaseOptimiser):
         
         optimise_settings = {
             'current_best_loglkl': self.bestfit['loglkl'],
-            'fixed_param_val': self.settings['fixed_param_val'],
             'initial_position': self.mcmc.chain.last_position,
             'covmat': self.covmat,
             'temperature': new_temp,
@@ -155,4 +157,6 @@ class SimulatedAnnealing(BaseOptimiser):
             'step_size': new_step_size,
             'step_size_change': self.settings['step_size_change']
         }
+        if self.config.run.jobtype == 'profile':
+            optimise_settings['fixed_param_val'] = self.settings['fixed_param_val']
         return optimise_settings

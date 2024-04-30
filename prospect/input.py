@@ -23,6 +23,9 @@ class Configuration:
                 modules['mcmc'] = import_module('prospect.mcmc')
             elif config_yaml['run']['jobtype'] == 'profile':
                 modules['profile'] = import_module('prospect.profile')
+            elif config_yaml['run']['jobtype'] == 'global_optimisation':
+                # Global optimisation uses profiling inputs for optimisation
+                modules['profile'] = import_module('prospect.profile')
             else:
                 raise ValueError("The given value of 'jobtype' is not recognised. Choose either 'mcmc' or 'profile'.")
         else:

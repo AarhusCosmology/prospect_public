@@ -6,8 +6,8 @@ from prospect.tasks.initialise_profile_task import initialise_profile_tasks
 def initialise_tasks(config) -> list[Type[BaseTask]]:
     if config.run.jobtype == 'mcmc':
         new_tasks = initialise_mcmc_tasks(config, mcmc_id=0)
-    elif config.run.jobtype == 'profile':
+    elif config.run.jobtype == 'profile' or config.run.jobtype == 'global_optimisation':
         new_tasks = initialise_profile_tasks(config)
     else:
-        raise ValueError(f'No tasks to start at initialization with jobtype {config["jobtype"]}.')
+        raise ValueError(f'No tasks to start at initialization with jobtype {[config.run.jobtype]}.')
     return new_tasks

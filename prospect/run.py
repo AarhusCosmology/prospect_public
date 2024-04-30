@@ -94,7 +94,10 @@ def analyse(prospect_folder):
     snapshot = load(prospect_folder)
     if snapshot.config.run.jobtype == 'profile':
         print(f"Analysing {prospect_folder} as a profile likelihood run.")
-        analysis_task = snapshot.get_profile_analysis()
+        analysis_task = snapshot.get_analysis_task()
+    if snapshot.config.run.jobtype == 'global_optimisation':
+        print(f"Analysing {prospect_folder} as a global optimisation likelihood run.")
+        analysis_task = snapshot.get_analysis_task()
 
     elif snapshot.config.run.jobtype == 'mcmc':
         print(f"Analysing {prospect_folder} as an MCMC run.")
@@ -133,7 +136,7 @@ def analyse_from_shell():
 class Arguments:
     class jobtype(InputArgument):
         val_type = str
-        allowed_values = ['mcmc', 'profile']
+        allowed_values = ['mcmc', 'profile', 'global_optimisation']
     
     class mode(InputArgument):
         val_type = str

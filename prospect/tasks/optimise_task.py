@@ -20,7 +20,10 @@ class OptimiseTask(BaseTask):
         self.optimiser = initialise_optimiser(self.config, kernel, self.optimise_settings)
         self.optimiser.optimise()
         self.optimiser.set_bestfit()
-        print(f"OptimiseTask id={self.id}, iteration {self.optimise_settings['iteration_number']} at {self.config.profile.parameter}={self.optimise_settings['fixed_param_val']:.4e} finished:")
+        if self.config.run.jobtype == 'profile':
+            print(f"OptimiseTask id={self.id}, iteration {self.optimise_settings['iteration_number']} at {self.config.profile.parameter}={self.optimise_settings['fixed_param_val']:.4e} finished:")
+        else:
+            print(f"OptimiseTask id={self.id}, iteration {self.optimise_settings['iteration_number']} finished:")
         print(f"\tBestfit loglkl={self.optimiser.bestfit['loglkl']:.10} | Acceptance rate={self.optimiser.bestfit['acceptance_rate']:.4} | Num_evals={np.sum(self.optimiser.mcmc.chain.mults)} | Temp={self.optimise_settings['temperature']:.4e} | Step size={self.optimise_settings['step_size']:.4e}")
 
     def finalize(self):

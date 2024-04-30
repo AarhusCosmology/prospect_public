@@ -129,11 +129,22 @@ def load_profile(prospect_folder, direct_txt=False):
 @dataclass
 class Arguments:
     class parameter(InputArgument):
-        val_type = str
+        val_type = str | NoneType
+        def get_default(self, config_yaml: dict[str, Any]):
+            if config_yaml['run']['jobtype'] == 'global_optimisation':
+                # None corresponds to global optimisation
+                return None
+            else:
+                raise ValueError("You need to specify the 'parameter' input of the profile section.")
     
     class values(InputArgument):
         """Parameter values where the profile is evaluated"""
         val_type = list[float] | list[int] | np.ndarray | list
+        def get_default(self, config_yaml: dict[str, Any]):
+            if config_yaml['run']['jobtype'] == 'global_optimisation':
+                return []
+            else:
+                raise ValueError("You need to specify the 'values' input of the profile section.")
     
     class optimiser(InputArgument):
         allowed_values = ['simulated annealing']

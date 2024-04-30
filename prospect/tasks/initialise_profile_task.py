@@ -2,6 +2,7 @@ from typing import Type
 from prospect.input import Configuration
 from prospect.tasks.base_task import BaseTask
 from prospect.tasks.initialise_optimiser_task import InitialiseOptimiserTask
+from prospect.tasks.initialise_optimiser_task import InitialiseOptimiserTask
 
 class InitialiseProfileTask(BaseTask):
     """
@@ -15,9 +16,14 @@ class InitialiseProfileTask(BaseTask):
     
     def emit_tasks(self) -> list[Type[BaseTask]]:
         task_list = []
-        for idx_rep in range(self.config.profile.repetitions):
-            for param_val in self.config.profile.values:
-                task_list.append(InitialiseOptimiserTask(self.config, param_val, idx_rep))
+        if self.config.run.jobtype == 'global_optimisation':
+            # Do global optimisation
+            for idx_rep in range(self.config.profile.repetitions):
+                task_list.append(InitialiseOptimiserTask(self.config, None, idx_rep))
+        else:
+            for idx_rep in range(self.config.profile.repetitions):
+                for param_val in self.config.profile.values:
+                    task_list.append(InitialiseOptimiserTask(self.config, param_val, idx_rep))
         return task_list
 
 def initialise_profile_tasks(config: Configuration) -> list[Type[BaseTask]]:

@@ -1,4 +1,5 @@
 import time
+from types import NoneType
 from typing import Type
 import numpy as np 
 from getdist import loadMCSamples
@@ -17,21 +18,23 @@ class InitialiseOptimiserTask(BaseTask):
     """
     priority = 80.0
 
-    def __init__(self, config: Configuration, fixed_param_val: float, repetition_number: int = 0):
+    def __init__(self, config: Configuration, fixed_param_val: float | NoneType, repetition_number: int = 0):
         super().__init__(config)
-        self.fixed_param_val = fixed_param_val
+        if self.config.run.jobtype == 'profile':
+            self.fixed_param_val = fixed_param_val
         self.repetition_number = repetition_number
 
     def run(self, _):
         kernel = initialise_kernel(self.config.kernel, self.config.io.dir, self.id)
-        try:
-            self.profile_param_idx = np.where(np.array(list(kernel.param['varying'].keys())) == self.config.profile.parameter)[0][0]
-        except Exception as e:
-            print("EXCEPTION:")
-            print(f"The requested profile parameter {self.config.profile.parameter} is not recognized by the kernel. Check that your kernel parameter file has the parameter enabled.")
-            print("Original exception:")
-            raise e
-        kernel.set_fixed_parameters({self.config.profile.parameter: self.fixed_param_val})
+        if self.config.run.jobtype == 'profile':
+            try:
+                self.profile_param_idx = np.where(np.array(list(kernel.param['varying'].keys())) == self.config.profile.parameter)[0][0]
+            except Exception as e:
+                print("EXCEPTION:")
+                print(f"The requested profile parameter {self.config.profile.parameter} is not recognized by the kernel. Check that your kernel parameter file has the parameter enabled.")
+                print("Original exception:")
+                raise e
+            kernel.set_fixed_parameters({self.config.profile.parameter: self.fixed_param_val})
 
         if self.config.profile.start_from_position is not None and self.config.profile.start_from_covmat is not None:
             self.set_initial_position(kernel, kernel.read_initial_position(self.config.profile.start_from_position))
@@ -48,10 +51,15 @@ class InitialiseOptimiserTask(BaseTask):
 
             from prospect.profile import load_profile
             start_profile = load_profile(self.config.profile.start_from_profile, direct_txt=True)
-            idx_closest = np.argmin(np.abs(start_profile[self.config.profile.parameter] - self.fixed_param_val))
+            if self.config.run.jobtype == 'profile':
+                idx_closest = np.argmin(np.abs(start_profile[self.config.profile.parameter] - self.fixed_param_val))
+                print(f"Set initial bestfit for {self.config.profile.parameter}={self.fixed_param_val} from the point {self.config.profile.parameter}={start_profile[self.config.profile.parameter][idx_closest]} in {self.config.profile.start_from_profile}.")
+            else:
+                # Start from best point of the profile
+                idx_closest = np.argmin(start_profile['-loglkl'])
+                print(f"Set initial bestfit for from the best point in the profile {self.config.profile.start_from_profile}.")
             position = {param: [start_profile[param][idx_closest]] for param in kernel.param['varying'].keys()}
             self.set_initial_position(kernel, position)
-            print(f"Set initial bestfit for {self.config.profile.parameter}={self.fixed_param_val} from the point {self.config.profile.parameter}={start_profile[self.config.profile.parameter][idx_closest]} in {self.config.profile.start_from_profile}.")
         
         elif self.config.profile.start_from_mcmc is not None:
             binned_points = self.get_binned_mcmc_reduced(kernel)
@@ -60,18 +68,16 @@ class InitialiseOptimiserTask(BaseTask):
             # Get bestfit among these points
             bestfit_index = np.argmin(binned_points.loglkls)
             bf = binned_points[bestfit_index]
-            bf[self.config.profile.parameter] = [self.fixed_param_val]
-            del bf[self.config.profile.parameter]
+            if self.config.run.jobtype == 'profile' and self.config.profile.parameter in bf:
+                del bf[self.config.profile.parameter]
+                print(f"Constructed local bestfit and covariance matrix around {self.config.profile.parameter}={self.fixed_param_val}.")
             self.set_initial_position(kernel, bf)
-
-            print(f"Constructed local bestfit and covariance matrix around {self.config.profile.parameter}={self.fixed_param_val}.")
         else:
             raise ValueError('InitialiseOptimiserTask could not construct an initial position and/or covariance matrix. Make sure to supply either "start_from_mcmc" or "start_from_position" and "start_from_covmat" in the profile section of the input.')
 
     def emit_tasks(self) -> list[Type[BaseTask]]:
         optimise_settings = {
             'current_best_loglkl': self.initial_loglkl,
-            'fixed_param_val': self.fixed_param_val,
             'initial_position': self.initial_bestfit,
             'covmat': self.initial_covmat,
             'temperature': self.config.profile.temperature_range[0],
@@ -81,6 +87,8 @@ class InitialiseOptimiserTask(BaseTask):
             'iteration_number': 0,
             'repetition_number': self.repetition_number
         }
+        if self.config.run.jobtype == 'profile':
+            optimise_settings['fixed_param_val'] = self.fixed_param_val
         return [OptimiseTask(self.config, optimise_settings)]
     
     def get_binned_mcmc_reduced(self, kernel):
@@ -105,8 +113,11 @@ class InitialiseOptimiserTask(BaseTask):
         for name in unneeded_params:
             del initial_chain.positions[name]
 
-        # Get start_bin_fraction fraction of total points closest to the param_val
-        return get_fraction_of_points_in_bin(initial_chain, self.fixed_param_val, self.config.profile.parameter, self.config.profile.start_bin_fraction)
+        if self.config.run.jobtype == 'profile':
+            # Get start_bin_fraction fraction of total points closest to the param_val
+            return get_fraction_of_points_in_bin(initial_chain, self.fixed_param_val, self.config.profile.parameter, self.config.profile.start_bin_fraction)
+        else:
+            return initial_chain.from_indices(range(len(initial_chain.mults)))
 
     def set_initial_position(self, kernel, position):
         self.initial_bestfit = position
@@ -114,8 +125,9 @@ class InitialiseOptimiserTask(BaseTask):
 
     def set_covmat(self, covmat):
         self.initial_covmat = covmat
-        self.initial_covmat = np.delete(self.initial_covmat, [self.profile_param_idx], 0) # remove row of profile param
-        self.initial_covmat = np.delete(self.initial_covmat, [self.profile_param_idx], 1) # remove column of profile param 
+        if self.config.run.jobtype == 'profile':
+            self.initial_covmat = np.delete(self.initial_covmat, [self.profile_param_idx], 0) # remove row of profile param
+            self.initial_covmat = np.delete(self.initial_covmat, [self.profile_param_idx], 1) # remove column of profile param 
 
 
 def get_temperature_change(config):
