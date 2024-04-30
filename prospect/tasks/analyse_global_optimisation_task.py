@@ -57,8 +57,8 @@ class AnalyseGlobalOptimisationTask(BaseAnalyseTask):
         return bestfits
 
     def write_results(self, bestfits, kernel) -> None:
-        results_file = os.path.join(self.dir, f'{self.config.profile.parameter}.txt')
-        param_names = [param_name for param_name in kernel.param['varying'] if param_name != self.config.profile.parameter]
+        results_file = os.path.join(self.dir, f'results.txt')
+        param_names = [param_name for param_name in kernel.param['varying']]
 
         print(f"Writing current optimisation results to {results_file}")
         with open(results_file,"w") as file:
