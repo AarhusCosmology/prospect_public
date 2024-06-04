@@ -56,6 +56,10 @@ class BaseTask(ABC):
 
     def __lt__(self, other):
         # Largest numerical value of priority is greatest
+        if self.priority == other.priority:
+            # Tie break by emission time
+            if self.time_emit is not None and other.time_emit is not None:
+                return self.time_emit < other.time_emit
         return self.priority > other.priority
 
     def finalize(self):
