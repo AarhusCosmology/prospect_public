@@ -2,7 +2,6 @@ from typing import Type
 from prospect.input import Configuration
 from prospect.tasks.base_task import BaseTask
 from prospect.tasks.initialise_optimiser_task import InitialiseOptimiserTask
-from prospect.tasks.initialise_optimiser_task import InitialiseOptimiserTask
 
 class InitialiseProfileTask(BaseTask):
     """
