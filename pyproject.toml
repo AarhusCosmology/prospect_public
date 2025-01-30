@@ -10,6 +10,13 @@ authors = [
   { name="Emil Brinch Holm", email="ebholm@phys.au.dk"},
   { name="Thomas Tram", email="thomas.tram@phys.au.dk"},
 ]
+dependencies = [
+    "numpy>=2.0",
+    "matplotlib>=3.4",
+    "scipy>=1.5",
+    "getdist>=1.3",
+    "PyYAML>=5.1"
+]
 description = "A profile likelihood code for frequentist cosmological parameter inference"
 readme = "README.md"
 classifiers = [
