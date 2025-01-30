@@ -11,6 +11,9 @@ class BaseKernel(ABC):
         self.set_default_errors()
         self.id = task_id
         self.initialise(config_kernel, output_folder)
+        
+        if config_kernel.ignore_prior:
+            self.logprior = lambda x: 0.0
 
         self.param = {
             'varying': {},
@@ -109,7 +112,7 @@ class BaseKernel(ABC):
         pass
 
     def logpost(self, position):
-        return self.loglkl(position)*self.logprior(position)
+        return self.loglkl(position) + self.logprior(position)
 
     @abstractmethod
     def get_default_initial_position(self):
@@ -178,9 +181,15 @@ class Arguments:
         val_type = bool
         def get_default(self, config_yaml: dict[str, Any]):
             return False
+    
+    class ignore_prior(InputArgument):
+        val_type = bool
+        def get_default(self, config_yaml: dict[str, Any]):
+            return False
 
     type: type
     param: param
     conf: conf
     path: path
     debug: debug
+    ignore_prior: ignore_prior
