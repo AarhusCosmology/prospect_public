@@ -360,6 +360,3 @@ class Arguments:
     start_from_covmat: start_from_covmat
     start_from_position: start_from_position
     start_from_profile: start_from_profile
-    
-
-
