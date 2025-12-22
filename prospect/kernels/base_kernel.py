@@ -161,7 +161,7 @@ class Arguments:
             return None
         def validate(self, config: dict[str, Any]) -> None:
             if config['type'] == 'montepython':
-                if not os.path.isfile(os.path.join(os.getcwd(), config['param'])):
+                if not os.path.isfile(os.path.join(os.getcwd(), config['conf'])):
                     raise ValueError(f"The file pointed to in the 'conf' field of the 'kernel' input, which has the value {config['conf']}, could not be found.")
     
     class path(InputArgument):
